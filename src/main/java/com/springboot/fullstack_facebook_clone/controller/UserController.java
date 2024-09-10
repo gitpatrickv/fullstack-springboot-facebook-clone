@@ -1,10 +1,12 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
+import com.springboot.fullstack_facebook_clone.dto.model.UserModel;
 import com.springboot.fullstack_facebook_clone.dto.request.LoginRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.ErrorResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.LoginResponse;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
-    @PostMapping("/login")
+    @PostMapping("/user/login")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
         try{
@@ -31,4 +33,16 @@ public class UserController {
             return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/user/register")
+    public ResponseEntity<?> register(@RequestBody @Valid UserModel userModel){
+        try{
+            LoginResponse loginResponse = userService.register(userModel);
+            return new ResponseEntity<>(loginResponse, HttpStatus.CREATED);
+        } catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse(StringUtil.ERROR_MESSAGE);
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
