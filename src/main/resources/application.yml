@@ -12,4 +12,4 @@ application:
   security:
     jwt:
       secret-key: 6jZy59I3gNLH1Pj45sJT9/E0SSQUA1yNcAV1yZaXiwE
-      expiration: 86400000 # 1 day
+      expiration: 604800000 # 1 week
