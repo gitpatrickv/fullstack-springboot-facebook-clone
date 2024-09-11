@@ -30,7 +30,8 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                                 authorize
-                                        .requestMatchers("/ws/**").permitAll()
+//                                        .requestMatchers("/ws/**").permitAll()
+                                        .requestMatchers("/api/user/**").permitAll()
                                         .anyRequest().permitAll()
                 );
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
