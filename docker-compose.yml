@@ -1,0 +1,31 @@
+services:
+  facebook-clone-db:
+    container_name: facebook-clone-db
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: facebook-db
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3307:3306"
+    volumes:
+      - facebook-clone-db:/var/lib/mysql
+    networks:
+      - facebook-clone-network
+  facebook-clone-api:
+    container_name: facebook-clone
+    image: facebook-clone:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - facebook-clone-network
+    depends_on:
+      - facebook-clone-db
+volumes:
+  facebook-clone-db:
+
+networks:
+  facebook-clone-network:
+    driver: bridge
+
+
+
