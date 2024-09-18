@@ -1,13 +1,10 @@
-//package com.springboot.fullstack_facebook_clone;
-//
-//import org.junit.jupiter.api.Test;
-//import org.springframework.boot.test.context.SpringBootTest;
-//
+package com.springboot.fullstack_facebook_clone;
+
 //@SpringBootTest
-//class FullstackFacebookCloneApplicationTests {
-//
+class FullstackFacebookCloneApplicationTests {
+
 //	@Test
-//	void contextLoads() {
-//	}
-//
-//}
+	void contextLoads() {
+	}
+
+}
