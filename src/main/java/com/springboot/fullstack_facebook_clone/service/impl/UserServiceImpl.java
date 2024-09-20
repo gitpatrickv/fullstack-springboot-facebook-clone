@@ -16,6 +16,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -66,5 +67,10 @@ public class UserServiceImpl implements UserService {
         } catch (AuthenticationException e) {
             throw new BadCredentialsException(StringUtil.INVALID_CREDENTIALS);
         }
+    }
+
+    @Override
+    public String getAuthenticatedUser() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

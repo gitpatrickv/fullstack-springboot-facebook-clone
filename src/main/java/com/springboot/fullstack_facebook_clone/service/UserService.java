@@ -7,4 +7,5 @@ import com.springboot.fullstack_facebook_clone.dto.response.LoginResponse;
 public interface UserService {
     LoginResponse login(LoginRequest loginRequest);
     LoginResponse register(UserModel userModel);
+    String getAuthenticatedUser();
 }
