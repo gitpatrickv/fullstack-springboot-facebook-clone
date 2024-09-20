@@ -4,10 +4,12 @@ import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
+import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.service.PostService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
@@ -18,14 +20,19 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostImageService postImageService;
+
     @Override
-    public void createPost(String email, String content) {
+    public void createPost(String email, String content, MultipartFile[] files) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
 
         Post post = new Post();
         post.setContent(content);
         post.setTimestamp(LocalDateTime.now());
         post.setUser(user);
-        postRepository.save(post);
+        Post savedPost = postRepository.save(post);
+
+        postImageService.uploadPostImages(savedPost.getPostId(), files);
+
     }
 }
