@@ -29,9 +29,6 @@ public class PostImageServiceImpl implements PostImageService {
 
         if(post.isPresent()){
             for (MultipartFile file : files) {
-                if(file.isEmpty()){
-                    return;
-                }
                 PostImage postImage = new PostImage();
                 postImage.setPost(post.get());
                 postImage.setPostImageUrl(this.processPostImages(postId, file));

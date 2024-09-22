@@ -32,7 +32,8 @@ public class PostServiceImpl implements PostService {
         post.setUser(user);
         Post savedPost = postRepository.save(post);
 
-        postImageService.uploadPostImages(savedPost.getPostId(), files);
-
+        if (files != null && files.length > 0) {
+            postImageService.uploadPostImages(savedPost.getPostId(), files);
+        }
     }
 }
