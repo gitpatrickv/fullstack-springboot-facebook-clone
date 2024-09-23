@@ -22,5 +22,8 @@ public class PostModel {
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime timestamp;
+    private String firstName;
+    private String lastName;
+    private String profilePicture;
     List<PostImageModel> postImages = new ArrayList<>();
 }

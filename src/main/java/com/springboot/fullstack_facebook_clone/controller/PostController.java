@@ -1,7 +1,7 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
-import com.springboot.fullstack_facebook_clone.dto.model.PostModel;
 import com.springboot.fullstack_facebook_clone.dto.response.ErrorResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
 import com.springboot.fullstack_facebook_clone.service.PostService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
@@ -11,8 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
@@ -37,10 +35,11 @@ public class PostController {
         }
     }
     @GetMapping
-    public ResponseEntity<?> fetchAllUserPosts() {
+    public ResponseEntity<?> fetchAllUserPosts(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                               @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         try {
             String currentUser = userService.getAuthenticatedUser();
-            List<PostModel> userPosts = postService.fetchAllUserPosts(currentUser);
+            PostListResponse userPosts = postService.fetchAllUserPosts(currentUser, pageNo, pageSize);
             return new ResponseEntity<>(userPosts, HttpStatus.OK);
         }
         catch (Exception e) {

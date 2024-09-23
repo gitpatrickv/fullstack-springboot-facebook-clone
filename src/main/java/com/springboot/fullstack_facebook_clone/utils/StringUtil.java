@@ -6,5 +6,6 @@ public class StringUtil {
     public static final String INVALID_CREDENTIALS = "Invalid username or password!";
     public static final String ERROR_MESSAGE = "We encountered an unexpected problem. Please try again later.";
     public static final String USER_EXISTS = "User already exists: ";
+    public static final String TIMESTAMP = "timestamp";
 
 }

@@ -2,6 +2,8 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.PostImageModel;
 import com.springboot.fullstack_facebook_clone.dto.model.PostModel;
+import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.User;
@@ -13,6 +15,10 @@ import com.springboot.fullstack_facebook_clone.service.PostService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.PostMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,13 +53,19 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostModel> fetchAllUserPosts(String email) {
+    public PostListResponse fetchAllUserPosts(String email, int pageNo, int pageSize) {
 
-        List<Post> posts = postRepository.findAllByUser_Email(email);
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
+        Page<Post> posts = postRepository.findAllByUser_Email(email, pageable);
+        PageResponse pageResponse = this.getPagination(posts);
+
         List<PostModel> postModelList = new ArrayList<>();
 
         for(Post post : posts){
             PostModel postModel = postMapper.mapEntityToModel(post);
+            postModel.setFirstName(post.getUser().getFirstName());
+            postModel.setLastName(post.getUser().getLastName());
+            postModel.setProfilePicture(post.getUser().getProfilePicture());
             postModelList.add(postModel);
 
             List<PostImageModel> postImageList = new ArrayList<>();
@@ -69,14 +81,18 @@ public class PostServiceImpl implements PostService {
                     postImageList.add(postImageModel);
                 }
             }
-
             postModel.setPostImages(postImageList);
         }
-
-        return postModelList;
+        return new PostListResponse(postModelList, pageResponse);
     }
 
-
-
-
+    private PageResponse getPagination(Page<Post> posts){
+        PageResponse pageResponse = new PageResponse();
+        pageResponse.setPageNo(posts.getNumber());
+        pageResponse.setPageSize(posts.getSize());
+        pageResponse.setTotalElements(posts.getTotalElements());
+        pageResponse.setTotalPages(posts.getTotalPages());
+        pageResponse.setLast(posts.isLast());
+        return pageResponse;
+    }
 }

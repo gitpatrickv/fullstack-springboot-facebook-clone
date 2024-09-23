@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class PostImageModel {
     private Long postImageId;
     private String postImageUrl;
