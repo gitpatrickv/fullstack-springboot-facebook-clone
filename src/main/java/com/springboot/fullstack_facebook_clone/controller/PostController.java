@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.NoSuchElementException;
+
 @RestController
 @RequestMapping("/api/post")
 @RequiredArgsConstructor
@@ -24,10 +26,13 @@ public class PostController {
     public ResponseEntity<?> createPost(@RequestPart(value="post", required = false) String content,
                                         @RequestPart(value = "file", required = false) MultipartFile[] files)
     {
+        String currentUser = userService.getAuthenticatedUser();
         try {
-            String currentUser = userService.getAuthenticatedUser();
             postService.createPost(currentUser, content, files);
             return new ResponseEntity<>(null, HttpStatus.CREATED);
+        } catch (NoSuchElementException e) {
+            ErrorResponse errorResponse = new ErrorResponse(StringUtil.USER_NOT_FOUND + currentUser);
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
         catch (Exception e) {
             ErrorResponse errorResponse = new ErrorResponse(StringUtil.ERROR_MESSAGE);
@@ -37,10 +42,14 @@ public class PostController {
     @GetMapping
     public ResponseEntity<?> fetchAllUserPosts(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
                                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        String currentUser = userService.getAuthenticatedUser();
         try {
-            String currentUser = userService.getAuthenticatedUser();
             PostListResponse userPosts = postService.fetchAllUserPosts(currentUser, pageNo, pageSize);
             return new ResponseEntity<>(userPosts, HttpStatus.OK);
+        }
+        catch (NoSuchElementException e) {
+            ErrorResponse errorResponse = new ErrorResponse(StringUtil.USER_NOT_FOUND + currentUser);
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
         }
         catch (Exception e) {
             ErrorResponse errorResponse = new ErrorResponse(StringUtil.ERROR_MESSAGE);

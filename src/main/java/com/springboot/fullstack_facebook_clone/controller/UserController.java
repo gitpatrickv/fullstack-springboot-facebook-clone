@@ -13,12 +13,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.NoSuchElementException;
+
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
+
     @PostMapping("/user/login")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
@@ -45,4 +48,16 @@ public class UserController {
         }
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<?> getCurrentUserInfo() {
+        String currentUser = userService.getAuthenticatedUser();
+
+        try {
+            UserModel userModel = userService.getCurrentUserInfo(currentUser);
+            return new ResponseEntity<>(userModel, HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            ErrorResponse errorResponse = new ErrorResponse(StringUtil.USER_NOT_FOUND + currentUser);
+            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        }
+    }
 }

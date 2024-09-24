@@ -8,4 +8,5 @@ public interface UserService {
     LoginResponse login(LoginRequest loginRequest);
     LoginResponse register(UserModel userModel);
     String getAuthenticatedUser();
+    UserModel getCurrentUserInfo(String email);
 }
