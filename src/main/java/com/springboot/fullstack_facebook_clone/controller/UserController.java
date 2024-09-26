@@ -4,6 +4,8 @@ import com.springboot.fullstack_facebook_clone.dto.model.UserModel;
 import com.springboot.fullstack_facebook_clone.dto.request.LoginRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.ErrorResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.LoginResponse;
+import com.springboot.fullstack_facebook_clone.entity.constants.ImageType;
+import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import jakarta.validation.Valid;
@@ -12,8 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.NoSuchElementException;
+import java.io.IOException;
+
+import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
+import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @RestController
 @RequestMapping("/api")
@@ -21,9 +27,9 @@ import java.util.NoSuchElementException;
 public class UserController {
 
     private final UserService userService;
+    private final PostImageService postImageService;
 
     @PostMapping("/user/login")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
         try{
             LoginResponse loginResponse = userService.login(loginRequest);
@@ -31,33 +37,29 @@ public class UserController {
         } catch (BadCredentialsException e) {
             ErrorResponse errorResponse = new ErrorResponse(StringUtil.INVALID_CREDENTIALS);
             return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse(StringUtil.ERROR_MESSAGE);
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/user/register")
-    public ResponseEntity<?> register(@RequestBody @Valid UserModel userModel){
-        try{
-            LoginResponse loginResponse = userService.register(userModel);
-            return new ResponseEntity<>(loginResponse, HttpStatus.CREATED);
-        } catch (Exception e) {
-            ErrorResponse errorResponse = new ErrorResponse(StringUtil.ERROR_MESSAGE);
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @ResponseStatus(HttpStatus.CREATED)
+    public LoginResponse register(@RequestBody @Valid UserModel userModel) {
+        return userService.register(userModel);
     }
 
     @GetMapping("/user")
-    public ResponseEntity<?> getCurrentUserInfo() {
+    public UserModel getCurrentUserInfo() {
         String currentUser = userService.getAuthenticatedUser();
+        return  userService.getCurrentUserInfo(currentUser);
+    }
 
-        try {
-            UserModel userModel = userService.getCurrentUserInfo(currentUser);
-            return new ResponseEntity<>(userModel, HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            ErrorResponse errorResponse = new ErrorResponse(StringUtil.USER_NOT_FOUND + currentUser);
-            return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
-        }
+    @PostMapping("/user/profile/picture/upload/{imageType}")
+    public void uploadUserImage(@RequestParam(value = "file") MultipartFile file, @PathVariable(value = "imageType") ImageType imageType){
+        String currentUser = userService.getAuthenticatedUser();
+        userService.uploadUserImage(currentUser,file,imageType);
+    }
+
+    @GetMapping(path = "/user/image/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})
+    public byte[] getUserPhoto(@PathVariable("filename") String filename) throws IOException {
+        return postImageService.getImages(filename);
     }
 }
