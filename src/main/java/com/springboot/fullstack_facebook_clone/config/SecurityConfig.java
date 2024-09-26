@@ -30,9 +30,10 @@ public class SecurityConfig {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                                 authorize
-//                                        .requestMatchers("/ws/**").permitAll()
+
                                         .requestMatchers("/api/user/**").permitAll()
-                                        .anyRequest().permitAll()
+                                        .requestMatchers("/api/post/**").permitAll()
+                                        .anyRequest().authenticated()
                 );
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         httpSecurity.authenticationProvider(authenticationProvider);

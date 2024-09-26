@@ -2,12 +2,10 @@ package com.springboot.fullstack_facebook_clone.config;
 
 
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
-import com.springboot.fullstack_facebook_clone.utils.ApplicationAuditAware;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -31,11 +29,6 @@ public class ApplicationConfig {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public AuditorAware<String> auditorAware(){
-        return new ApplicationAuditAware();
     }
 
     @Bean

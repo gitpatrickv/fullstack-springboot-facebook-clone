@@ -34,7 +34,7 @@ public class User implements UserDetails {
     private LocalDate dateOfBirth;
     private String profilePicture;
     private String coverPhoto;
-
+    private LocalDate createdAt;
     @Enumerated(EnumType.STRING)
     private Gender gender;
     @Enumerated(EnumType.STRING)
@@ -42,6 +42,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<PostLike> postLikes = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

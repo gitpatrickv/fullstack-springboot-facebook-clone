@@ -25,6 +25,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -64,6 +65,7 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = mapper.mapUserModelToUserEntity(userModel);
+        user.setCreatedAt(LocalDate.now());
         userRepository.save(user);
 
         try {

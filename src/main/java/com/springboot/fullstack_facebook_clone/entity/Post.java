@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,13 +15,12 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "posts")
-public class Post {
+public class Post extends Timestamp{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
     private String content;
-    private LocalDateTime timestamp;
 
     @OneToMany(mappedBy = "post",  cascade = CascadeType.ALL)
     private List<PostImage> postImages = new ArrayList<>();
@@ -30,5 +28,8 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostLike> postLikes = new ArrayList<>();
 
 }
