@@ -8,4 +8,6 @@ public class StringUtil {
     public static final String USER_EXISTS = "User already exists: ";
     public static final String TIMESTAMP = "timestamp";
     public static final String SIZE_EXCEEDED = "File size exceeds the maximum allowed limit";
+    public static final String POST_NOT_FOUND = "Post not found with id: ";
+    public static final String X_REQUESTED_WITH = "X-Requested-With";
 }

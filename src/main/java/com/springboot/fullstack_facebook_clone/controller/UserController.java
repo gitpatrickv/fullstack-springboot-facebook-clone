@@ -22,14 +22,14 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
     private final PostImageService postImageService;
 
-    @PostMapping("/user/login")
+    @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
         try{
             LoginResponse loginResponse = userService.login(loginRequest);
@@ -40,25 +40,25 @@ public class UserController {
         }
     }
 
-    @PostMapping("/user/register")
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public LoginResponse register(@RequestBody @Valid UserModel userModel) {
         return userService.register(userModel);
     }
 
-    @GetMapping("/user")
+    @GetMapping
     public UserModel getCurrentUserInfo() {
         String currentUser = userService.getAuthenticatedUser();
         return  userService.getCurrentUserInfo(currentUser);
     }
 
-    @PostMapping("/user/profile/picture/upload/{imageType}")
+    @PostMapping("/profile/picture/upload/{imageType}")
     public void uploadUserImage(@RequestParam(value = "file") MultipartFile file, @PathVariable(value = "imageType") ImageType imageType){
         String currentUser = userService.getAuthenticatedUser();
         userService.uploadUserImage(currentUser,file,imageType);
     }
 
-    @GetMapping(path = "/user/image/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})
+    @GetMapping(path = "/image/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})
     public byte[] getUserPhoto(@PathVariable("filename") String filename) throws IOException {
         return postImageService.getImages(filename);
     }

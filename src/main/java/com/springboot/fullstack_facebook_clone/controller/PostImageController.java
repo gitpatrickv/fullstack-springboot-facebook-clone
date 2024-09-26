@@ -11,18 +11,18 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.http.MediaType.IMAGE_PNG_VALUE;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/post")
 @RequiredArgsConstructor
 public class PostImageController {
 
     private final PostImageService postImageService;
 
-    @PostMapping("/post/image/upload")
+    @PostMapping("/image/upload")
     public void uploadPostImages(@RequestParam(value = "postId")Long postId, @RequestParam(value = "file") MultipartFile[] files){
         postImageService.uploadPostImages(postId,files);
     }
 
-    @GetMapping(path = "/post/image/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})
+    @GetMapping(path = "/image/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})
     public byte[] getImages(@PathVariable("filename") String filename) throws IOException {
         return postImageService.getImages(filename);
     }

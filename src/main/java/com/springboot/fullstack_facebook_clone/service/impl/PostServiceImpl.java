@@ -14,6 +14,7 @@ import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.service.PostService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.PostMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -36,7 +37,7 @@ public class PostServiceImpl implements PostService {
     private final PostImageService postImageService;
     private final PostMapper postMapper;
     private final PostImageRepository postImageRepository;
-
+    @Transactional
     @Override
     public void createPost(String email, String content, MultipartFile[] files) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
