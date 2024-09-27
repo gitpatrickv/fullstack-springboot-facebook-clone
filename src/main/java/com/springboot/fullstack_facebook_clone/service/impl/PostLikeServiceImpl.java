@@ -1,6 +1,7 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.response.LikeResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostLikeCountResponse;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostLike;
 import com.springboot.fullstack_facebook_clone.entity.User;
@@ -54,6 +55,17 @@ public class PostLikeServiceImpl implements PostLikeService {
         likeResponse.setLiked(postLike.isPresent());
 
         return likeResponse;
+    }
+
+    @Override
+    public PostLikeCountResponse getPostLikeCount(Long postId) {
+
+        Long postLikes = postLikeRepository.findAllByPost_PostId(postId).stream().count();
+
+        PostLikeCountResponse postLikeCountResponse = new PostLikeCountResponse();
+        postLikeCountResponse.setPostLikeCount(postLikes);
+
+        return postLikeCountResponse;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
 import com.springboot.fullstack_facebook_clone.dto.response.LikeResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostLikeCountResponse;
 import com.springboot.fullstack_facebook_clone.service.PostLikeService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,10 @@ public class PostLikeController {
     public LikeResponse getPostLike(@PathVariable Long postId){
         String currentUser = userService.getAuthenticatedUser();
         return postLikeService.getPostLike(currentUser, postId);
+    }
+
+    @GetMapping("/{postId}/like/count")
+    public PostLikeCountResponse getPostLikeCount(@PathVariable Long postId){
+        return postLikeService.getPostLikeCount(postId);
     }
 }
