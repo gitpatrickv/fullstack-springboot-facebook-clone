@@ -6,6 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface PostService {
 
     void createPost(String email, String content, MultipartFile[] files);
-    PostListResponse fetchAllUserPosts(String email, int pageNo, int pageSize);
+    PostListResponse fetchAllUserPosts(Long userId, int pageNo, int pageSize);
 
 }

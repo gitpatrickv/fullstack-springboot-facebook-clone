@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    Page<Post> findAllByUser_Email(String email, Pageable pageable);
+    Page<Post> findAllByUser_UserId(Long userId, Pageable pageable);
 //    @Query("SELECT p FROM Post p WHERE p.user.email = :email")
 //    List<Post> findAllByUserEmail(@Param("email") String email);
 }

@@ -25,11 +25,11 @@ public class PostController {
         String currentUser = userService.getAuthenticatedUser();
         postService.createPost(currentUser, content, files);
     }
-    @GetMapping
-    public PostListResponse fetchAllUserPosts(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+    @GetMapping("/{userId}")
+    public PostListResponse fetchAllUserPosts(@PathVariable Long userId,
+                                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
                                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
-        String currentUser = userService.getAuthenticatedUser();
-        return postService.fetchAllUserPosts(currentUser,pageNo,pageSize);
+        return postService.fetchAllUserPosts(userId,pageNo,pageSize);
     }
 }
 

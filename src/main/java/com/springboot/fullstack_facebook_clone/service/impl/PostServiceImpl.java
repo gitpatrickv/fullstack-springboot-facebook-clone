@@ -54,10 +54,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostListResponse fetchAllUserPosts(String email, int pageNo, int pageSize) {
-
+    public PostListResponse fetchAllUserPosts(Long userId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
-        Page<Post> posts = postRepository.findAllByUser_Email(email, pageable);
+        Page<Post> posts = postRepository.findAllByUser_UserId(userId, pageable);
         PageResponse pageResponse = this.getPagination(posts);
 
         List<PostModel> postModelList = new ArrayList<>();
