@@ -11,6 +11,7 @@ public interface UserService {
     LoginResponse register(UserModel userModel);
     String getAuthenticatedUser();
     UserModel getCurrentUserInfo(String email);
+    UserModel getUserProfileInfo(Long userId);
     void uploadUserImage(String email, MultipartFile file, ImageType imageType);
     String processUserImage(String email, MultipartFile image);
 }

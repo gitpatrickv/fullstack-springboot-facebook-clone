@@ -49,7 +49,11 @@ public class UserController {
     @GetMapping
     public UserModel getCurrentUserInfo() {
         String currentUser = userService.getAuthenticatedUser();
-        return  userService.getCurrentUserInfo(currentUser);
+        return userService.getCurrentUserInfo(currentUser);
+    }
+    @GetMapping("/profile/{userId}")
+    public UserModel getUserProfileInfo(@PathVariable Long userId) {
+        return userService.getUserProfileInfo(userId);
     }
 
     @PostMapping("/profile/picture/upload/{imageType}")

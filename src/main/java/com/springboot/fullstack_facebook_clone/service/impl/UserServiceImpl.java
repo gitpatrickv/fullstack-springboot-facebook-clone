@@ -95,6 +95,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserModel getUserProfileInfo(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+
+        return mapper.mapUserEntityToUserModel(user);
+    }
+
+    @Override
     public void uploadUserImage(String email, MultipartFile file, ImageType imageType) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
 

@@ -26,7 +26,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_DEFAULT;
 @ConfirmPasswordValid
 @JsonInclude(NON_DEFAULT)
 public class UserModel {
-
+    private Long userId;
     @NotBlank(message = "{first.name.required}")
     private String firstName;
 
