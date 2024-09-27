@@ -2,6 +2,7 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.response.LikeResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostLikeCountResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostLikeUserListResponse;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostLike;
 import com.springboot.fullstack_facebook_clone.entity.User;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -60,12 +62,29 @@ public class PostLikeServiceImpl implements PostLikeService {
     @Override
     public PostLikeCountResponse getPostLikeCount(Long postId) {
 
-        Long postLikes = postLikeRepository.findAllByPost_PostId(postId).stream().count();
+        Long postLikes = postLikeRepository.findAllByPost_PostId(postId).
+                stream()
+                .count();
 
         PostLikeCountResponse postLikeCountResponse = new PostLikeCountResponse();
         postLikeCountResponse.setPostLikeCount(postLikes);
 
         return postLikeCountResponse;
+    }
+
+    @Override
+    public List<PostLikeUserListResponse> getPostLikeUserList(Long postId) {
+        return postLikeRepository.findAllByPost_PostId(postId)
+                .stream()
+                .map(users -> {
+                    PostLikeUserListResponse userList = new PostLikeUserListResponse();
+                    userList.setPostLikeId(users.getPostLikeId());
+                    userList.setUserId(users.getUser().getUserId());
+                    userList.setFirstName(users.getUser().getFirstName());
+                    userList.setLastName(users.getUser().getLastName());
+                    return userList;
+                })
+                .toList();
     }
 
 }
