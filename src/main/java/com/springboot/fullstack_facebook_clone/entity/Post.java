@@ -32,4 +32,7 @@ public class Post extends Timestamp{
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostLike> postLikes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostComment> postComments = new ArrayList<>();
+
 }
