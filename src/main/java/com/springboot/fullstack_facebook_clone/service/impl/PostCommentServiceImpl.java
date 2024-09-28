@@ -2,6 +2,7 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.PostCommentModel;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostCommentCountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostCommentListResponse;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostComment;
@@ -70,6 +71,16 @@ public class PostCommentServiceImpl implements PostCommentService {
         }
 
         return new PostCommentListResponse(postCommentModelList, pageResponse);
+    }
+
+    @Override
+    public PostCommentCountResponse getCommentCount(Long postId) {
+        Long commentCount = postCommentRepository.findAllByPost_PostId(postId).stream().count();
+
+        PostCommentCountResponse countResponse = new PostCommentCountResponse();
+        countResponse.setPostCommentCount(commentCount);
+
+        return countResponse;
     }
 
     private PageResponse getPagination(Page<PostComment> postComments){

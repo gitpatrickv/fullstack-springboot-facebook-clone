@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
+import com.springboot.fullstack_facebook_clone.dto.response.PostCommentCountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostCommentListResponse;
 import com.springboot.fullstack_facebook_clone.service.PostCommentService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
@@ -27,5 +28,9 @@ public class PostCommentController {
                                                         @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
                                                         @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
         return postCommentService.fetchAllPostComments(postId,pageNo,pageSize);
+    }
+    @GetMapping("/{postId}/comment/count")
+    public PostCommentCountResponse getCommentCount(@PathVariable("postId")  Long postId){
+        return postCommentService.getCommentCount(postId);
     }
 }
