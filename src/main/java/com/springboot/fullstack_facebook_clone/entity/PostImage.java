@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,4 +25,7 @@ public class PostImage {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+//    @OneToMany(mappedBy = "postImage", cascade = CascadeType.ALL)
+//    private List<PostComment> postComments = new ArrayList<>();
 }

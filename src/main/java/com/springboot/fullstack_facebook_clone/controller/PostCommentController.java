@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
+import com.springboot.fullstack_facebook_clone.dto.response.PostCommentListResponse;
 import com.springboot.fullstack_facebook_clone.service.PostCommentService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,12 @@ public class PostCommentController {
                                  @RequestPart(value = "file", required = false) MultipartFile file){
         String currentUser = userService.getAuthenticatedUser();
         postCommentService.writePostComment(currentUser,postId, comment, file);
+    }
+
+    @GetMapping("/{postId}/comment")
+    public PostCommentListResponse fetchAllPostComments(@PathVariable("postId")  Long postId,
+                                                        @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                                        @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
+        return postCommentService.fetchAllPostComments(postId,pageNo,pageSize);
     }
 }

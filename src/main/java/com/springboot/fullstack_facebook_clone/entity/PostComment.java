@@ -14,7 +14,7 @@ import java.awt.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "post_comment")
-public class PostComment {
+public class PostComment extends Timestamp{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
