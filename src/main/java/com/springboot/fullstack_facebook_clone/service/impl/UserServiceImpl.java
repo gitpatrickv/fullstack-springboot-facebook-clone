@@ -3,10 +3,15 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 import com.springboot.fullstack_facebook_clone.dto.model.UserModel;
 import com.springboot.fullstack_facebook_clone.dto.request.LoginRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.LoginResponse;
+import com.springboot.fullstack_facebook_clone.entity.Post;
+import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.entity.constants.ImageType;
+import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
+import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.security.JwtService;
+import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.UserMapper;
@@ -26,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -39,6 +45,9 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final UserMapper mapper;
+    private PostImageService postImageService;
+    private final PostRepository postRepository;
+    private final PostImageRepository postImageRepository;
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
         try {
@@ -102,7 +111,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void uploadUserImage(String email, MultipartFile file, ImageType imageType) {
+    public void uploadUserImage(String email, MultipartFile file, ImageType imageType, String description) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
 
         if(optionalUser.isPresent()){
@@ -114,14 +123,26 @@ public class UserServiceImpl implements UserService {
                 } else if (imageType.equals(ImageType.COVER_PHOTO)) {
                     user.setCoverPhoto(processUserImage(email, file));
                 }
-                userRepository.save(user);
+                User savedUser = userRepository.save(user);
+
+                Post post = new Post();
+                post.setContent(description);
+                post.setTimestamp(LocalDateTime.now());
+                post.setUser(savedUser);
+                Post savedPost = postRepository.save(post);
+
+                PostImage postImage = new PostImage();
+                postImage.setPost(savedPost);
+                postImage.setPostImageUrl(processUserImage(email, file));
+                postImageRepository.save(postImage);
+
             }
         }
     }
 
     @Override
     public String processUserImage(String email, MultipartFile image) {
-        String filename = email + "_" + System.currentTimeMillis() + "_" + image.getOriginalFilename();
+        String filename = System.currentTimeMillis() + "_" + image.getOriginalFilename();
 
         try {
             Path fileStorageLocation = Paths.get(StringUtil.PHOTO_DIRECTORY).toAbsolutePath().normalize();

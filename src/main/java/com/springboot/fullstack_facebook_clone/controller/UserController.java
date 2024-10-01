@@ -57,9 +57,11 @@ public class UserController {
     }
 
     @PostMapping("/profile/picture/upload/{imageType}")
-    public void uploadUserImage(@RequestParam(value = "file") MultipartFile file, @PathVariable(value = "imageType") ImageType imageType){
+    public void uploadUserImage(@PathVariable(value = "imageType") ImageType imageType,
+                                @RequestPart(value = "file") MultipartFile file,
+                                @RequestPart(value="description", required = false) String description){
         String currentUser = userService.getAuthenticatedUser();
-        userService.uploadUserImage(currentUser,file,imageType);
+        userService.uploadUserImage(currentUser,file,imageType, description);
     }
 
     @GetMapping(path = "/image/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})

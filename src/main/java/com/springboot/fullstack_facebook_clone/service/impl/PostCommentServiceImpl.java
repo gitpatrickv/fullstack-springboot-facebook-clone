@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,7 +51,7 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     public PostCommentListResponse fetchAllPostComments(Long postId, int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<PostComment> postComments = postCommentRepository.findAllByPost_PostId(postId, pageable);
         PageResponse pageResponse = this.getPagination(postComments);
 
