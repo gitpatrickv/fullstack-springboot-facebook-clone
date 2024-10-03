@@ -11,7 +11,6 @@ import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.security.JwtService;
-import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.UserMapper;
@@ -45,7 +44,6 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final UserMapper mapper;
-    private PostImageService postImageService;
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
     @Override

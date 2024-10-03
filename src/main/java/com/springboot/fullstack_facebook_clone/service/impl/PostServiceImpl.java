@@ -1,11 +1,10 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
-import com.springboot.fullstack_facebook_clone.dto.model.PostImageModel;
 import com.springboot.fullstack_facebook_clone.dto.model.PostModel;
+import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
 import com.springboot.fullstack_facebook_clone.entity.Post;
-import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostRepository;
@@ -27,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -62,28 +62,39 @@ public class PostServiceImpl implements PostService {
         List<PostModel> postModelList = new ArrayList<>();
 
         for(Post post : posts){
-            PostModel postModel = postMapper.mapEntityToModel(post);
-            postModel.setFirstName(post.getUser().getFirstName());
-            postModel.setLastName(post.getUser().getLastName());
-            postModel.setProfilePicture(post.getUser().getProfilePicture());
+            PostModel postModel = this.getPostById(post,postMapper);
             postModelList.add(postModel);
 
-            List<PostImageModel> postImageList = new ArrayList<>();
-
-            if(!post.getPostImages().isEmpty()){
-                List<PostImage> postImages = postImageRepository.findAllByPost_PostId(post.getPostId());
-
-                for(PostImage postImage : postImages){
-                    PostImageModel postImageModel = new PostImageModel();
-                    postImageModel.setPostImageId(postImage.getPostImageId());
-                    postImageModel.setPostImageUrl(postImage.getPostImageUrl());
-
-                    postImageList.add(postImageModel);
-                }
+            if(post.getSharedPost() != null){
+                Post sharedPost = post.getSharedPost();
+                PostModel sharedPostModel = this.getPostById(sharedPost, postMapper);
+                postModel.setSharedPost(sharedPostModel);
             }
-            postModel.setPostImages(postImageList);
         }
         return new PostListResponse(postModelList, pageResponse);
+    }
+
+    @Override
+    public void sharePost(String email, Long postId, SharePostRequest request) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+        Optional<Post> sharedPost = postRepository.findById(postId);
+
+        if(sharedPost.isPresent()) {
+            Post post = new Post();
+            post.setContent(request.getContent());
+            post.setTimestamp(LocalDateTime.now());
+            post.setUser(user);
+            post.setSharedPost(sharedPost.get());
+            postRepository.save(post);
+        }
+    }
+
+    private PostModel getPostById(Post post, PostMapper postMapper) {
+        PostModel postModel = postMapper.mapEntityToModel(post);
+        postModel.setFirstName(post.getUser().getFirstName());
+        postModel.setLastName(post.getUser().getLastName());
+        postModel.setProfilePicture(post.getUser().getProfilePicture());
+        return postModel;
     }
 
     private PageResponse getPagination(Page<Post> posts){

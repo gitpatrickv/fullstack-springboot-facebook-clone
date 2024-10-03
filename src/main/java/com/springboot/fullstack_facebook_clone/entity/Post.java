@@ -35,4 +35,11 @@ public class Post extends Timestamp{
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostComment> postComments = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shared_post_id")
+    private Post sharedPost;
+
+    @OneToMany(mappedBy = "sharedPost", cascade = CascadeType.ALL)
+    private List<Post> sharedPosts = new ArrayList<>();
+
 }

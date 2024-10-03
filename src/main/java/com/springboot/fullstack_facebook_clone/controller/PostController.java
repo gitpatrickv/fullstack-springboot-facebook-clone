@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
+import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
 import com.springboot.fullstack_facebook_clone.service.PostService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
@@ -30,6 +31,11 @@ public class PostController {
                                                 @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
                                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         return postService.fetchAllUserPosts(userId,pageNo,pageSize);
+    }
+    @PostMapping("/share/{postId}")
+    public void sharePost(@PathVariable("postId") Long postId, @RequestBody SharePostRequest request) {
+        String currentUser = userService.getAuthenticatedUser();
+        postService.sharePost(currentUser,postId,request);
     }
 }
 
