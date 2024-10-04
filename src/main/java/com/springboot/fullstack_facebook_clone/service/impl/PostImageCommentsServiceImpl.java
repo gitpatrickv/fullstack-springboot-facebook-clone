@@ -2,6 +2,7 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.PostCommentModel;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostCommentCountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostCommentListResponse;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.PostImageComments;
@@ -69,6 +70,19 @@ public class PostImageCommentsServiceImpl implements PostImageCommentsService {
         }
 
         return new PostCommentListResponse(postCommentModelList, pageResponse);
+    }
+
+    @Override
+    public PostCommentCountResponse getPostImageCommentCount(Long postImageId) {
+        Long commentCount = postImageCommentsRepository.findAllByPostImage_PostImageId(postImageId)
+                .stream()
+                .count();
+
+        PostCommentCountResponse countResponse = new PostCommentCountResponse();
+        countResponse.setPostCommentCount(commentCount);
+
+        return countResponse;
+
     }
 
     private PageResponse getPagination(Page<PostImageComments> postImageComments){
