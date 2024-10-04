@@ -26,6 +26,10 @@ public class PostImage {
     @JoinColumn(name = "post_id")
     private Post post;
 
-//    @OneToMany(mappedBy = "postImage", cascade = CascadeType.ALL)
-//    private List<PostComment> postComments = new ArrayList<>();
+    @OneToMany(mappedBy = "postImage", cascade = CascadeType.ALL)
+    private List<PostImageLikes> postImageLikes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "postImage", cascade = CascadeType.ALL)
+    private List<PostImageComments> postImageComments = new ArrayList<>();
+
 }

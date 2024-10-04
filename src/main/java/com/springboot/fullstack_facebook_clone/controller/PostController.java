@@ -33,7 +33,7 @@ public class PostController {
         return postService.fetchAllUserPosts(userId,pageNo,pageSize);
     }
     @PostMapping("/share/{postId}")
-    public void sharePost(@PathVariable("postId") Long postId, @RequestBody SharePostRequest request) {
+    public void sharePost(@PathVariable("postId") Long postId, @RequestBody(required = false) SharePostRequest request) {
         String currentUser = userService.getAuthenticatedUser();
         postService.sharePost(currentUser,postId,request);
     }
