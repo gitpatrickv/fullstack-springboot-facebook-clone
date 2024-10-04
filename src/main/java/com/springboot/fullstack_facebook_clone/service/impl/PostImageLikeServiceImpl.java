@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
+import com.springboot.fullstack_facebook_clone.dto.response.LikeResponse;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.PostImageLikes;
 import com.springboot.fullstack_facebook_clone.entity.User;
@@ -39,5 +40,17 @@ public class PostImageLikeServiceImpl implements PostImageLikeService {
             postImageLikes.setUser(user);
             postImageLikesRepository.save(postImageLikes);
         }
+    }
+
+    @Override
+    public LikeResponse getPostImageLike(String email, Long postImageId) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+        Optional<PostImageLikes> postLike = postImageLikesRepository.findByPostImage_PostImageIdAndUser_UserId(postImageId, user.getUserId());
+
+        LikeResponse likeResponse = new LikeResponse();
+
+        likeResponse.setLiked(postLike.isPresent());
+
+        return likeResponse;
     }
 }
