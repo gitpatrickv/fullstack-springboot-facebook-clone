@@ -1,5 +1,8 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
+import com.springboot.fullstack_facebook_clone.dto.model.PostCommentModel;
+import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostCommentListResponse;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.PostImageComments;
 import com.springboot.fullstack_facebook_clone.entity.User;
@@ -10,10 +13,15 @@ import com.springboot.fullstack_facebook_clone.service.PostImageCommentsService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
@@ -38,5 +46,38 @@ public class PostImageCommentsServiceImpl implements PostImageCommentsService {
         postImageComments.setPostImage(postImage);
         postImageComments.setTimestamp(LocalDateTime.now());
         postImageCommentsRepository.save(postImageComments);
+    }
+
+    @Override
+    public PostCommentListResponse fetchAllPostImageComments(Long postImageId, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<PostImageComments> postImageComments = postImageCommentsRepository.findAllByPostImage_PostImageId(postImageId, pageable);
+        PageResponse pageResponse = this.getPagination(postImageComments);
+
+        List<PostCommentModel> postCommentModelList = new ArrayList<>();
+
+        for(PostImageComments postImageComment : postImageComments){
+            PostCommentModel postCommentModel = new PostCommentModel();
+            postCommentModel.setPostCommentId(postImageComment.getPostImageCommentId());
+            postCommentModel.setComment(postImageComment.getComment());
+            postCommentModel.setCommentImage(postImageComment.getCommentImage());
+            postCommentModel.setFirstName(postImageComment.getUser().getFirstName());
+            postCommentModel.setLastName(postImageComment.getUser().getLastName());
+            postCommentModel.setProfilePicture(postImageComment.getUser().getProfilePicture());
+            postCommentModel.setTimestamp(postImageComment.getTimestamp());
+            postCommentModelList.add(postCommentModel);
+        }
+
+        return new PostCommentListResponse(postCommentModelList, pageResponse);
+    }
+
+    private PageResponse getPagination(Page<PostImageComments> postImageComments){
+        PageResponse pageResponse = new PageResponse();
+        pageResponse.setPageNo(postImageComments.getNumber());
+        pageResponse.setPageSize(postImageComments.getSize());
+        pageResponse.setTotalElements(postImageComments.getTotalElements());
+        pageResponse.setTotalPages(postImageComments.getTotalPages());
+        pageResponse.setLast(postImageComments.isLast());
+        return pageResponse;
     }
 }
