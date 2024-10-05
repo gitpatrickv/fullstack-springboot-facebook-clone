@@ -2,6 +2,7 @@ package com.springboot.fullstack_facebook_clone.controller;
 
 import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.SharedPostCountResponse;
 import com.springboot.fullstack_facebook_clone.service.PostService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,11 @@ public class PostController {
     public void sharePost(@PathVariable("postId") Long postId, @RequestBody(required = false) SharePostRequest request) {
         String currentUser = userService.getAuthenticatedUser();
         postService.sharePost(currentUser,postId,request);
+    }
+
+    @GetMapping("/share/count/{postId}")
+    public SharedPostCountResponse getSharedPostCount(@PathVariable("postId") Long postId) {
+        return postService.getSharedPostCount(postId);
     }
 }
 

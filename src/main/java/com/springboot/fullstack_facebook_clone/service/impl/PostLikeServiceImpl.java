@@ -62,10 +62,7 @@ public class PostLikeServiceImpl implements PostLikeService {
     @Override
     public PostLikeCountResponse getPostLikeCount(Long postId) {
 
-        Long postLikes = postLikeRepository.findAllByPost_PostId(postId)
-                .stream()
-                .count();
-
+        Long postLikes = postLikeRepository.countPostLike(postId);
         PostLikeCountResponse postLikeCountResponse = new PostLikeCountResponse();
         postLikeCountResponse.setPostLikeCount(postLikes);
 

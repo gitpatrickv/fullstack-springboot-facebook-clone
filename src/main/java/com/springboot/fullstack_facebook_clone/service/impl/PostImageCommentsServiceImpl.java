@@ -74,10 +74,8 @@ public class PostImageCommentsServiceImpl implements PostImageCommentsService {
 
     @Override
     public PostCommentCountResponse getPostImageCommentCount(Long postImageId) {
-        Long commentCount = postImageCommentsRepository.findAllByPostImage_PostImageId(postImageId)
-                .stream()
-                .count();
 
+        Long commentCount = postImageCommentsRepository.countPostImageComments(postImageId);
         PostCommentCountResponse countResponse = new PostCommentCountResponse();
         countResponse.setPostCommentCount(commentCount);
 

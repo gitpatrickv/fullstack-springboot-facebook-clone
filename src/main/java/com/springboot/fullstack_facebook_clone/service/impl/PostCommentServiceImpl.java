@@ -74,8 +74,8 @@ public class PostCommentServiceImpl implements PostCommentService {
 
     @Override
     public PostCommentCountResponse getCommentCount(Long postId) {
-        Long commentCount = postCommentRepository.findAllByPost_PostId(postId).stream().count();
 
+        Long commentCount = postCommentRepository.countPostComment(postId);
         PostCommentCountResponse countResponse = new PostCommentCountResponse();
         countResponse.setPostCommentCount(commentCount);
 

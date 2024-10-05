@@ -4,6 +4,7 @@ import com.springboot.fullstack_facebook_clone.dto.model.PostModel;
 import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.SharedPostCountResponse;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
@@ -87,6 +88,16 @@ public class PostServiceImpl implements PostService {
             post.setSharedPost(sharedPost.get());
             postRepository.save(post);
         }
+    }
+
+    @Override
+    public SharedPostCountResponse getSharedPostCount(Long postId) {
+
+        Long count = postRepository.countSharedPost(postId);
+
+        SharedPostCountResponse sharedPostCountResponse = new SharedPostCountResponse();
+        sharedPostCountResponse.setSharedPostCount(count);
+        return sharedPostCountResponse;
     }
 
     private PostModel getPostById(Post post, PostMapper postMapper) {

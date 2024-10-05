@@ -59,10 +59,8 @@ public class PostImageLikeServiceImpl implements PostImageLikeService {
 
     @Override
     public PostLikeCountResponse getPostImageLikeCount(Long postImageId) {
-        Long postImageLikes = postImageLikesRepository.findAllByPostImage_PostImageId(postImageId)
-                .stream()
-                .count();
 
+        Long postImageLikes = postImageLikesRepository.countPostImageLike(postImageId);
         PostLikeCountResponse postLikeCountResponse = new PostLikeCountResponse();
         postLikeCountResponse.setPostLikeCount(postImageLikes);
 
