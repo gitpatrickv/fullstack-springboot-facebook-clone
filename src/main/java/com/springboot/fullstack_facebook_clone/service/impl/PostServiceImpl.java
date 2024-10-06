@@ -86,12 +86,51 @@ public class PostServiceImpl implements PostService {
         Optional<Post> sharedPost = postRepository.findById(postId);
 
         if(sharedPost.isPresent()) {
-            Post post = new Post();
-            post.setContent(request.getContent());
-            post.setTimestamp(LocalDateTime.now());
-            post.setUser(user);
-            post.setSharedPost(sharedPost.get());
-            postRepository.save(post);
+            Post post = sharedPost.get();
+            Post newPost = new Post();
+            newPost.setContent(request.getContent());
+            newPost.setTimestamp(LocalDateTime.now());
+            newPost.setUser(user);
+            if (post.getSharedPost() != null && post.getSharedImage() == null) {
+                newPost.setSharedPost(post.getSharedPost());
+            }
+            else if(post.getSharedImage() != null) {
+                newPost.setSharedPost(post.getSharedPost());
+                newPost.setSharedImage(post.getSharedImage());
+            }
+            else {
+                newPost.setSharedPost(post);
+            }
+            postRepository.save(newPost);
+        }
+    }
+
+    @Override
+    public void sharePostImage(String email, Long postImageId,  Long postId,  SharePostRequest request) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+        Optional<PostImage> postImage = postImageRepository.findById(postImageId);
+        Optional<Post> sharedPost = postRepository.findById(postId);
+
+        if(postImage.isPresent() && sharedPost.isPresent()){
+            Post post = sharedPost.get();
+            Post newPost = new Post();
+            newPost.setContent(request.getContent());
+            newPost.setTimestamp(LocalDateTime.now());
+            newPost.setUser(user);
+
+            if(post.getSharedPost() != null && post.getSharedImage() != null){
+                newPost.setSharedPost(post.getSharedPost());
+                newPost.setSharedImage(post.getSharedImage());
+            } else if (post.getSharedImage() == null && post.getSharedPost() != null){
+                newPost.setSharedPost(post.getSharedPost());
+                newPost.setSharedImage(postImage.get());
+            }
+            else {
+                newPost.setSharedImage(postImage.get());
+                newPost.setSharedPost(post);
+            }
+
+            postRepository.save(newPost);
         }
     }
 
@@ -103,22 +142,6 @@ public class PostServiceImpl implements PostService {
         SharedPostCountResponse sharedPostCountResponse = new SharedPostCountResponse();
         sharedPostCountResponse.setSharedPostCount(count);
         return sharedPostCountResponse;
-    }
-
-    @Override
-    public void sharePostImage(String email, Long postImageId,  Long postId,  SharePostRequest request) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
-        Optional<PostImage> postImage = postImageRepository.findById(postImageId);
-        Optional<Post> optionalPost = postRepository.findById(postId);
-        if(postImage.isPresent() && optionalPost.isPresent()){
-            Post post = new Post();
-            post.setContent(request.getContent());
-            post.setTimestamp(LocalDateTime.now());
-            post.setUser(user);
-            post.setSharedImage(postImage.get());
-            post.setSharedPost(optionalPost.get());
-            postRepository.save(post);
-        }
     }
 
     private PostModel getPostById(Post post, PostMapper postMapper) {

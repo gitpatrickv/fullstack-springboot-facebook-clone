@@ -16,6 +16,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 //    List<Post> findAllByUserEmail(@Param("email") String email);
 
 //    List<Post> findAllBySharedPost_PostId(Long postId);
-    @Query("SELECT COUNT(c) FROM Post c WHERE c.sharedPost.postId = :postId")
+    @Query("SELECT COUNT(c) FROM Post c WHERE c.sharedPost.postId = :postId AND c.sharedImage IS NULL")
     Long countSharedPost(@Param("postId") Long postId);
 }
