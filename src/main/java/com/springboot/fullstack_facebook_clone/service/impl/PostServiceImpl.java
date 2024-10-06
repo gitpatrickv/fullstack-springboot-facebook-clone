@@ -135,6 +135,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public SharedPostCountResponse getSharedPostImageCount(Long postImageId) {
+        Long count = postRepository.countSharedPostImage(postImageId);
+
+        SharedPostCountResponse sharedPostCountResponse = new SharedPostCountResponse();
+        sharedPostCountResponse.setSharedPostCount(count);
+        return sharedPostCountResponse;
+    }
+
+    @Override
     public SharedPostCountResponse getSharedPostCount(Long postId) {
 
         Long count = postRepository.countSharedPost(postId);

@@ -50,6 +50,10 @@ public class PostController {
         String currentUser = userService.getAuthenticatedUser();
         postService.sharePostImage(currentUser, postImageId, postId,request);
     }
+    @GetMapping("/share/image/count/{postImageId}")
+    public SharedPostCountResponse getSharedPostImageCount(@PathVariable("postImageId")Long postImageId) {
+        return postService.getSharedPostImageCount(postImageId);
+    }
 }
 
 
