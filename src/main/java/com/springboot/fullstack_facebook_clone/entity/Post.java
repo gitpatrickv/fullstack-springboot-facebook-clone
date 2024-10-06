@@ -25,6 +25,10 @@ public class Post extends Timestamp{
     @OneToMany(mappedBy = "post",  cascade = CascadeType.ALL)
     private List<PostImage> postImages = new ArrayList<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shared_image_id")
+    private PostImage sharedImage;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

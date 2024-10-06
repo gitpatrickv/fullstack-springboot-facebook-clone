@@ -2,10 +2,9 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.PostModel;
 import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
-import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
-import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
-import com.springboot.fullstack_facebook_clone.dto.response.SharedPostCountResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.*;
 import com.springboot.fullstack_facebook_clone.entity.Post;
+import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostRepository;
@@ -14,6 +13,7 @@ import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.service.PostService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.PostMapper;
+import com.springboot.fullstack_facebook_clone.utils.mapper.SharedPostMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,6 +37,7 @@ public class PostServiceImpl implements PostService {
     private final UserRepository userRepository;
     private final PostImageService postImageService;
     private final PostMapper postMapper;
+    private final SharedPostMapper sharedPostMapper;
     private final PostImageRepository postImageRepository;
     @Transactional
     @Override
@@ -68,8 +69,12 @@ public class PostServiceImpl implements PostService {
 
             if(post.getSharedPost() != null){
                 Post sharedPost = post.getSharedPost();
-                PostModel sharedPostModel = this.getPostById(sharedPost, postMapper);
-                postModel.setSharedPost(sharedPostModel);
+                SharedPostResponse sharedPostResponse = sharedPostMapper.mapEntityToModel(sharedPost);
+                sharedPostResponse.setUserId(sharedPost.getUser().getUserId());
+                sharedPostResponse.setFirstName(sharedPost.getUser().getFirstName());
+                sharedPostResponse.setLastName(sharedPost.getUser().getLastName());
+                sharedPostResponse.setProfilePicture(sharedPost.getUser().getProfilePicture());
+                postModel.setSharedPost(sharedPostResponse);
             }
         }
         return new PostListResponse(postModelList, pageResponse);
@@ -100,8 +105,25 @@ public class PostServiceImpl implements PostService {
         return sharedPostCountResponse;
     }
 
+    @Override
+    public void sharePostImage(String email, Long postImageId,  Long postId,  SharePostRequest request) {
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+        Optional<PostImage> postImage = postImageRepository.findById(postImageId);
+        Optional<Post> optionalPost = postRepository.findById(postId);
+        if(postImage.isPresent() && optionalPost.isPresent()){
+            Post post = new Post();
+            post.setContent(request.getContent());
+            post.setTimestamp(LocalDateTime.now());
+            post.setUser(user);
+            post.setSharedImage(postImage.get());
+            post.setSharedPost(optionalPost.get());
+            postRepository.save(post);
+        }
+    }
+
     private PostModel getPostById(Post post, PostMapper postMapper) {
         PostModel postModel = postMapper.mapEntityToModel(post);
+        postModel.setUserId(post.getUser().getUserId());
         postModel.setFirstName(post.getUser().getFirstName());
         postModel.setLastName(post.getUser().getLastName());
         postModel.setProfilePicture(post.getUser().getProfilePicture());

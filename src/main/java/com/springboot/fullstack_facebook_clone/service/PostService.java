@@ -11,5 +11,6 @@ public interface PostService {
     PostListResponse fetchAllUserPosts(Long userId, int pageNo, int pageSize);
     void sharePost(String email, Long postId, SharePostRequest request);
     SharedPostCountResponse getSharedPostCount(Long postId);
+    void sharePostImage(String email, Long postImageId, Long postId, SharePostRequest request);
 
 }

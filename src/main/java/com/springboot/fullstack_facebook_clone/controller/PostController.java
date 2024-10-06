@@ -43,6 +43,13 @@ public class PostController {
     public SharedPostCountResponse getSharedPostCount(@PathVariable("postId") Long postId) {
         return postService.getSharedPostCount(postId);
     }
+    @PostMapping("/share/image/{postId}/{postImageId}")
+    public void sharePostImage(@PathVariable("postImageId") Long postImageId,
+                               @PathVariable("postId") Long postId,
+                               @RequestBody(required = false) SharePostRequest request) {
+        String currentUser = userService.getAuthenticatedUser();
+        postService.sharePostImage(currentUser, postImageId, postId,request);
+    }
 }
 
 
