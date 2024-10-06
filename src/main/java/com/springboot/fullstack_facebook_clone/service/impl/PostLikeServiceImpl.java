@@ -1,8 +1,10 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
+import com.springboot.fullstack_facebook_clone.dto.model.UserDataModel;
 import com.springboot.fullstack_facebook_clone.dto.response.LikeResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostLikeCountResponse;
-import com.springboot.fullstack_facebook_clone.dto.response.PostLikeUserListResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostLike;
 import com.springboot.fullstack_facebook_clone.entity.User;
@@ -13,9 +15,13 @@ import com.springboot.fullstack_facebook_clone.service.PostLikeService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -70,18 +76,34 @@ public class PostLikeServiceImpl implements PostLikeService {
     }
 
     @Override
-    public List<PostLikeUserListResponse> getPostLikeUserList(Long postId) {
-        return postLikeRepository.findAllByPost_PostId(postId)
-                .stream()
-                .map(users -> {
-                    PostLikeUserListResponse userList = new PostLikeUserListResponse();
-                    userList.setPostLikeId(users.getPostLikeId());
-                    userList.setUserId(users.getUser().getUserId());
-                    userList.setFirstName(users.getUser().getFirstName());
-                    userList.setLastName(users.getUser().getLastName());
-                    return userList;
-                })
-                .toList();
+    public UserListResponse getPostLikeUserList(Long postId, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<PostLike> postLikes = postLikeRepository.findAllByPost_PostId(postId, pageable);
+        PageResponse pageResponse = this.getPagination(postLikes);
+
+        List<UserDataModel> userDataModels = new ArrayList<>();
+
+        for(PostLike postLike : postLikes){
+            UserDataModel userDataModel = new UserDataModel();
+            userDataModel.setUniqueId(postLike.getPostLikeId());
+            userDataModel.setUserId(postLike.getUser().getUserId());
+            userDataModel.setFirstName(postLike.getUser().getFirstName());
+            userDataModel.setLastName(postLike.getUser().getLastName());
+            userDataModel.setProfilePicture(postLike.getUser().getProfilePicture());
+            userDataModels.add(userDataModel);
+        }
+
+        return new UserListResponse(userDataModels,pageResponse);
+    }
+
+    private PageResponse getPagination(Page<PostLike> postLikes){
+        PageResponse pageResponse = new PageResponse();
+        pageResponse.setPageNo(postLikes.getNumber());
+        pageResponse.setPageSize(postLikes.getSize());
+        pageResponse.setTotalElements(postLikes.getTotalElements());
+        pageResponse.setTotalPages(postLikes.getTotalPages());
+        pageResponse.setLast(postLikes.isLast());
+        return pageResponse;
     }
 
 }

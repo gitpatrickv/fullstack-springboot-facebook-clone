@@ -2,13 +2,11 @@ package com.springboot.fullstack_facebook_clone.controller;
 
 import com.springboot.fullstack_facebook_clone.dto.response.LikeResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostLikeCountResponse;
-import com.springboot.fullstack_facebook_clone.dto.response.PostLikeUserListResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 import com.springboot.fullstack_facebook_clone.service.PostLikeService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/post")
@@ -34,7 +32,9 @@ public class PostLikeController {
         return postLikeService.getPostLikeCount(postId);
     }
     @GetMapping("/{postId}/like/user/list")
-    public List<PostLikeUserListResponse> getPostLikeUserList(@PathVariable Long postId){
-        return postLikeService.getPostLikeUserList(postId);
+    public UserListResponse getPostLikeUserList(@PathVariable Long postId,
+                                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
+        return postLikeService.getPostLikeUserList(postId,pageNo,pageSize);
     }
 }
