@@ -2,7 +2,10 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.PostModel;
 import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
-import com.springboot.fullstack_facebook_clone.dto.response.*;
+import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.SharedPostCountResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.SharedPostResponse;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.User;
@@ -151,6 +154,16 @@ public class PostServiceImpl implements PostService {
         SharedPostCountResponse sharedPostCountResponse = new SharedPostCountResponse();
         sharedPostCountResponse.setSharedPostCount(count);
         return sharedPostCountResponse;
+    }
+
+    @Override
+    public void deletePost(String email, Long postId) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if(user.isPresent()){
+            postRepository.deleteById(postId);
+        } else {
+            throw new NoSuchElementException(StringUtil.USER_NOT_FOUND + email);
+        }
     }
 
     private PostModel getPostById(Post post, PostMapper postMapper) {

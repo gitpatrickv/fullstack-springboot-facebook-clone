@@ -54,6 +54,11 @@ public class PostController {
     public SharedPostCountResponse getSharedPostImageCount(@PathVariable("postImageId")Long postImageId) {
         return postService.getSharedPostImageCount(postImageId);
     }
+    @DeleteMapping("/delete/{postId}")
+    public void deletePost(@PathVariable("postId") Long postId){
+        String currentUser = userService.getAuthenticatedUser();
+        postService.deletePost(currentUser, postId);
+    }
 }
 
 
