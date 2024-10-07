@@ -2,11 +2,17 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    url: jdbc:mysql://facebook-clone-db:3306/facebook-db
-    password: password
+#    url: jdbc:mysql://facebook-clone-db:3306/facebook-db
+#    password: password
+    url: jdbc:mysql://localhost:3306/facebook-db
+    password: patrick
   jpa:
     hibernate:
       ddl-auto: update
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 application:
   security:

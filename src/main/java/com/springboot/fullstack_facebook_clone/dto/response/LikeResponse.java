@@ -5,7 +5,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ErrorResponse {
+public class LikeResponse {
 
-    private String errorMessage;
+    private boolean liked;
 }
