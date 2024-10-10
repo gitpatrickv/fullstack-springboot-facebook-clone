@@ -118,6 +118,20 @@ public class FriendshipServiceImpl implements FriendshipService {
         return friendshipStatusResponse;
     }
 
+    @Override
+    public void unfriend(String currentUser, Long friendId) {
+        User user = userRepository.findByEmail(currentUser)
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
+
+        Long userId = user.getUserId();
+
+        Optional<Friendship> friendship1 = friendshipRepository.findByFriendship(userId, friendId, FriendshipStatus.FRIENDS);
+        friendship1.ifPresent(friendshipRepository::delete);
+
+        Optional<Friendship> friendship2 = friendshipRepository.findByFriendship(friendId, userId, FriendshipStatus.FRIENDS);
+        friendship2.ifPresent(friendshipRepository::delete);
+    }
+
     private PageResponse getPagination(Page<Friendship> friendships){
         PageResponse pageResponse = new PageResponse();
         pageResponse.setPageNo(friendships.getNumber());

@@ -9,4 +9,5 @@ public interface FriendshipService {
     void acceptFriendRequest(String currentUser, Long strangerUserId);
     UserListResponse fetchAllFriendRequest(Long userId, int pageNo, int pageSize);
     FriendshipStatusResponse getFriendshipStatus(String currentUser, Long friendId);
+    void unfriend(String currentUser, Long friendId);
 }
