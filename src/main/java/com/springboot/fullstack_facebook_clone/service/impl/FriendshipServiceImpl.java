@@ -1,5 +1,8 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
+import com.springboot.fullstack_facebook_clone.dto.model.UserDataModel;
+import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 import com.springboot.fullstack_facebook_clone.entity.Friendship;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.entity.constants.FriendshipStatus;
@@ -8,10 +11,16 @@ import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.FriendshipService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -28,6 +37,10 @@ public class FriendshipServiceImpl implements FriendshipService {
         User user = userRepository.findByEmail(currentUser)
                 .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
         Optional<Friendship> friendRequest = friendshipRepository.findByFriendship(user.getUserId(), strangerUserId, FriendshipStatus.PENDING);
+
+        if(user.getUserId().equals(strangerUserId)){
+            throw new IllegalArgumentException(StringUtil.FRIEND_REQUEST_NOT_ALLOWED);
+        }
 
         if(friendRequest.isPresent()){
             friendshipRepository.deleteByUser_UserIdAndFriends_UserId(user.getUserId(), strangerUserId);
@@ -65,5 +78,36 @@ public class FriendshipServiceImpl implements FriendshipService {
             friendship.setTimestamp(LocalDateTime.now());
             friendshipRepository.save(friendship);
         }
+    }
+
+    @Override
+    public UserListResponse fetchAllFriendRequest(Long userId, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
+        Page<Friendship> friendships = friendshipRepository.findAllByStatusAndFriends_UserId(FriendshipStatus.PENDING, userId, pageable);
+        PageResponse pageResponse = this.getPagination(friendships);
+
+        List<UserDataModel> userDataModels = new ArrayList<>();
+
+        for(Friendship friendship : friendships){
+            UserDataModel userDataModel = new UserDataModel();
+            userDataModel.setUniqueId(friendship.getFriendshipId());
+            userDataModel.setUserId(friendship.getUser().getUserId());
+            userDataModel.setFirstName(friendship.getUser().getFirstName());
+            userDataModel.setLastName(friendship.getUser().getLastName());
+            userDataModel.setProfilePicture(friendship.getUser().getProfilePicture());
+            userDataModels.add(userDataModel);
+        }
+        return new UserListResponse(userDataModels,pageResponse);
+
+    }
+
+    private PageResponse getPagination(Page<Friendship> friendships){
+        PageResponse pageResponse = new PageResponse();
+        pageResponse.setPageNo(friendships.getNumber());
+        pageResponse.setPageSize(friendships.getSize());
+        pageResponse.setTotalElements(friendships.getTotalElements());
+        pageResponse.setTotalPages(friendships.getTotalPages());
+        pageResponse.setLast(friendships.isLast());
+        return pageResponse;
     }
 }

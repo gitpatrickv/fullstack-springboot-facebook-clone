@@ -1,13 +1,11 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
+import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 import com.springboot.fullstack_facebook_clone.service.FriendshipService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/friends")
@@ -26,6 +24,13 @@ public class FriendshipController {
     public void acceptFriendRequest(@PathVariable("strangerUserId") Long strangerUserId) {
         String currentUser = userService.getAuthenticatedUser();
         friendshipService.acceptFriendRequest(currentUser,strangerUserId);
+    }
+
+    @GetMapping("/request/list/{userId}")
+    public UserListResponse fetchAllFriendRequest(@PathVariable("userId") Long userId,
+                                                  @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                                  @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
+        return friendshipService.fetchAllFriendRequest(userId ,pageNo,pageSize);
     }
 }
 

@@ -2,6 +2,8 @@ package com.springboot.fullstack_facebook_clone.repository;
 
 import com.springboot.fullstack_facebook_clone.entity.Friendship;
 import com.springboot.fullstack_facebook_clone.entity.constants.FriendshipStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,5 +21,7 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     );
 
     void deleteByUser_UserIdAndFriends_UserId(Long userId, Long strangerId);
+
+    Page<Friendship> findAllByStatusAndFriends_UserId(FriendshipStatus status, Long userId, Pageable pageable);
 
 }
