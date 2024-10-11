@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
+import com.springboot.fullstack_facebook_clone.dto.response.CountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.FriendshipStatusResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 import com.springboot.fullstack_facebook_clone.service.FriendshipService;
@@ -59,6 +60,10 @@ public class FriendshipController {
     public void deleteFriendRequest(@PathVariable("strangerId") Long strangerId){
         String currentUser = userService.getAuthenticatedUser();
         friendshipService.deleteFriendRequest(currentUser,strangerId);
+    }
+    @GetMapping("/count/{userId}")
+    public CountResponse getFriendListCount(@PathVariable("userId") Long userId) {
+        return friendshipService.getFriendListCount(userId);
     }
 }
 

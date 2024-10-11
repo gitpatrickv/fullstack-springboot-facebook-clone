@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.service;
 
+import com.springboot.fullstack_facebook_clone.dto.response.CountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.FriendshipStatusResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 
@@ -12,4 +13,5 @@ public interface FriendshipService {
     FriendshipStatusResponse getFriendshipStatus(String currentUser, Long friendId, boolean isRequestStatus);
     void unfriend(String currentUser, Long friendId);
     void deleteFriendRequest(String currentUser, Long strangerId);
+    CountResponse getFriendListCount(Long userId);
 }

@@ -1,6 +1,7 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.UserDataModel;
+import com.springboot.fullstack_facebook_clone.dto.response.CountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.FriendshipStatusResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
@@ -143,6 +144,15 @@ public class FriendshipServiceImpl implements FriendshipService {
                 .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
         Optional<Friendship> friendship = friendshipRepository.findByFriendship(strangerId, user.getUserId(), FriendshipStatus.PENDING);
         friendship.ifPresent(friendshipRepository::delete);
+    }
+
+    @Override
+    public CountResponse getFriendListCount(Long userId) {
+        Long count = friendshipRepository.getFriendListCount(userId);
+
+        CountResponse countResponse = new CountResponse();
+        countResponse.setCount(count);
+        return countResponse;
     }
 
     private List<UserDataModel> getFriendsDataModels(Page<Friendship> friendships) {
