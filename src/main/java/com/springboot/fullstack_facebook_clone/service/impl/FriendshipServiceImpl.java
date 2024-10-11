@@ -103,10 +103,16 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public FriendshipStatusResponse getFriendshipStatus(String currentUser, Long friendId) {
+    public FriendshipStatusResponse getFriendshipStatus(String currentUser, Long friendId, boolean isRequestStatus) {
         User user = userRepository.findByEmail(currentUser)
                 .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
-        Optional<Friendship> friendship = friendshipRepository.findByUser_UserIdAndFriends_UserId(user.getUserId(), friendId);
+        Optional<Friendship> friendship;
+
+        if(isRequestStatus){
+            friendship = friendshipRepository.findByUser_UserIdAndFriends_UserId(user.getUserId(), friendId);
+        } else {
+            friendship = friendshipRepository.findByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus.PENDING, friendId, user.getUserId());
+        }
 
         if(friendship.isEmpty()){
             return null;
