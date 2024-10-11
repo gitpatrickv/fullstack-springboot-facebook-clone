@@ -51,15 +51,13 @@ public class FriendshipController {
         String currentUser = userService.getAuthenticatedUser();
         return friendshipService.getFriendshipStatus(currentUser,friendId, false);
     }
-    @DeleteMapping("/unfriend/{friendId}")
-    public void unfriend(@PathVariable("friendId") Long friendId) {
-        String currentUser = userService.getAuthenticatedUser();
-        friendshipService.unfriend(currentUser,friendId);
+    @DeleteMapping("/unfriend/{userId}/{friendId}")
+    public void unfriend(@PathVariable("userId") Long userId, @PathVariable("friendId") Long friendId) {
+        friendshipService.unfriend(userId,friendId);
     }
-    @DeleteMapping("/delete/{strangerId}")
-    public void deleteFriendRequest(@PathVariable("strangerId") Long strangerId){
-        String currentUser = userService.getAuthenticatedUser();
-        friendshipService.deleteFriendRequest(currentUser,strangerId);
+    @DeleteMapping("/delete/{userId}/{strangerId}")
+    public void deleteFriendRequest(@PathVariable("userId") Long userId, @PathVariable("strangerId") Long strangerId){
+        friendshipService.deleteFriendRequest(userId,strangerId);
     }
     @GetMapping("/count/{userId}")
     public CountResponse getFriendListCount(@PathVariable("userId") Long userId) {

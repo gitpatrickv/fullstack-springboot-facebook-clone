@@ -125,11 +125,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public void unfriend(String currentUser, Long friendId) {
-        User user = userRepository.findByEmail(currentUser)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
-
-        Long userId = user.getUserId();
+    public void unfriend(Long userId, Long friendId) {
 
         Optional<Friendship> friendship1 = friendshipRepository.findByFriendship(userId, friendId, FriendshipStatus.FRIENDS);
         friendship1.ifPresent(friendshipRepository::delete);
@@ -139,10 +135,8 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public void deleteFriendRequest(String currentUser, Long strangerId) {
-        User user = userRepository.findByEmail(currentUser)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
-        Optional<Friendship> friendship = friendshipRepository.findByFriendship(strangerId, user.getUserId(), FriendshipStatus.PENDING);
+    public void deleteFriendRequest(Long userId, Long strangerId) {
+        Optional<Friendship> friendship = friendshipRepository.findByFriendship(strangerId, userId, FriendshipStatus.PENDING);
         friendship.ifPresent(friendshipRepository::delete);
     }
 

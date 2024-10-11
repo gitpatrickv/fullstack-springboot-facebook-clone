@@ -11,7 +11,7 @@ public interface FriendshipService {
     UserListResponse fetchAllFriendRequest(Long userId, int pageNo, int pageSize);
     UserListResponse fetchAllUserFriends(Long userId,  int pageNo, int pageSize);
     FriendshipStatusResponse getFriendshipStatus(String currentUser, Long friendId, boolean isRequestStatus);
-    void unfriend(String currentUser, Long friendId);
-    void deleteFriendRequest(String currentUser, Long strangerId);
+    void unfriend(Long userId, Long friendId);
+    void deleteFriendRequest(Long userId, Long strangerId);
     CountResponse getFriendListCount(Long userId);
 }
