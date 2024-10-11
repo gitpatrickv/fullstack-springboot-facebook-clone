@@ -10,4 +10,5 @@ public interface FriendshipService {
     UserListResponse fetchAllFriendRequest(Long userId, int pageNo, int pageSize);
     FriendshipStatusResponse getFriendshipStatus(String currentUser, Long friendId, boolean isRequestStatus);
     void unfriend(String currentUser, Long friendId);
+    void deleteFriendRequest(String currentUser, Long strangerId);
 }

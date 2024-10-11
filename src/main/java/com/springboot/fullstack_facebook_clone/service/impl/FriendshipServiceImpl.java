@@ -111,7 +111,7 @@ public class FriendshipServiceImpl implements FriendshipService {
         if(isRequestStatus){
             friendship = friendshipRepository.findByUser_UserIdAndFriends_UserId(user.getUserId(), friendId);
         } else {
-            friendship = friendshipRepository.findByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus.PENDING, friendId, user.getUserId());
+            friendship = friendshipRepository.findByFriendship(friendId, user.getUserId(), FriendshipStatus.PENDING);
         }
 
         if(friendship.isEmpty()){
@@ -137,6 +137,15 @@ public class FriendshipServiceImpl implements FriendshipService {
         Optional<Friendship> friendship2 = friendshipRepository.findByFriendship(friendId, userId, FriendshipStatus.FRIENDS);
         friendship2.ifPresent(friendshipRepository::delete);
     }
+
+    @Override
+    public void deleteFriendRequest(String currentUser, Long strangerId) {
+        User user = userRepository.findByEmail(currentUser)
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
+        Optional<Friendship> friendship = friendshipRepository.findByFriendship(strangerId, user.getUserId(), FriendshipStatus.PENDING);
+        friendship.ifPresent(friendshipRepository::delete);
+    }
+
 
     private PageResponse getPagination(Page<Friendship> friendships){
         PageResponse pageResponse = new PageResponse();

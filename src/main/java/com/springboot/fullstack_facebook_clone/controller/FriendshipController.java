@@ -49,5 +49,10 @@ public class FriendshipController {
         String currentUser = userService.getAuthenticatedUser();
         friendshipService.unfriend(currentUser,friendId);
     }
+    @DeleteMapping("/delete/{strangerId}")
+    public void deleteFriendRequest(@PathVariable("strangerId") Long strangerId){
+        String currentUser = userService.getAuthenticatedUser();
+        friendshipService.deleteFriendRequest(currentUser,strangerId);
+    }
 }
 
