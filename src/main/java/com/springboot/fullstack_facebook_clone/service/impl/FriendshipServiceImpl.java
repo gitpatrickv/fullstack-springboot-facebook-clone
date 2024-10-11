@@ -87,19 +87,18 @@ public class FriendshipServiceImpl implements FriendshipService {
         Page<Friendship> friendships = friendshipRepository.findAllByStatusAndFriends_UserId(FriendshipStatus.PENDING, userId, pageable);
         PageResponse pageResponse = this.getPagination(friendships);
 
-        List<UserDataModel> userDataModels = new ArrayList<>();
-
-        for(Friendship friendship : friendships){
-            UserDataModel userDataModel = new UserDataModel();
-            userDataModel.setUniqueId(friendship.getFriendshipId());
-            userDataModel.setUserId(friendship.getUser().getUserId());
-            userDataModel.setFirstName(friendship.getUser().getFirstName());
-            userDataModel.setLastName(friendship.getUser().getLastName());
-            userDataModel.setProfilePicture(friendship.getUser().getProfilePicture());
-            userDataModels.add(userDataModel);
-        }
+        List<UserDataModel> userDataModels = this.getUserDataModels(friendships);
         return new UserListResponse(userDataModels,pageResponse);
+    }
 
+    @Override
+    public UserListResponse fetchAllUserFriends(Long userId, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
+        Page<Friendship> friendships = friendshipRepository.findAllByStatusAndUser_UserId(FriendshipStatus.FRIENDS, userId, pageable);
+        PageResponse pageResponse = this.getPagination(friendships);
+
+        List<UserDataModel> userDataModels = this.getFriendsDataModels(friendships);
+        return new UserListResponse(userDataModels,pageResponse);
     }
 
     @Override
@@ -146,6 +145,36 @@ public class FriendshipServiceImpl implements FriendshipService {
         friendship.ifPresent(friendshipRepository::delete);
     }
 
+    private List<UserDataModel> getFriendsDataModels(Page<Friendship> friendships) {
+        List<UserDataModel> userDataModels = new ArrayList<>();
+
+        for(Friendship friendship : friendships){
+            UserDataModel userDataModel = new UserDataModel();
+            userDataModel.setUniqueId(friendship.getFriendshipId());
+            userDataModel.setUserId(friendship.getFriends().getUserId());
+            userDataModel.setFirstName(friendship.getFriends().getFirstName());
+            userDataModel.setLastName(friendship.getFriends().getLastName());
+            userDataModel.setProfilePicture(friendship.getFriends().getProfilePicture());
+            userDataModels.add(userDataModel);
+        }
+
+        return userDataModels;
+    }
+
+    private List<UserDataModel> getUserDataModels(Page<Friendship> friendships) {
+        List<UserDataModel> userDataModels = new ArrayList<>();
+
+        for(Friendship friendship : friendships){
+            UserDataModel userDataModel = new UserDataModel();
+            userDataModel.setUniqueId(friendship.getFriendshipId());
+            userDataModel.setUserId(friendship.getUser().getUserId());
+            userDataModel.setFirstName(friendship.getUser().getFirstName());
+            userDataModel.setLastName(friendship.getUser().getLastName());
+            userDataModel.setProfilePicture(friendship.getUser().getProfilePicture());
+            userDataModels.add(userDataModel);
+        }
+        return userDataModels;
+    }
 
     private PageResponse getPagination(Page<Friendship> friendships){
         PageResponse pageResponse = new PageResponse();

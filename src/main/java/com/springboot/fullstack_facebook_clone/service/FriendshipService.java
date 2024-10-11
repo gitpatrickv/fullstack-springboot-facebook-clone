@@ -8,6 +8,7 @@ public interface FriendshipService {
     void addToFriend(String currentUser, Long strangerUserId);
     void acceptFriendRequest(String currentUser, Long strangerUserId);
     UserListResponse fetchAllFriendRequest(Long userId, int pageNo, int pageSize);
+    UserListResponse fetchAllUserFriends(Long userId,  int pageNo, int pageSize);
     FriendshipStatusResponse getFriendshipStatus(String currentUser, Long friendId, boolean isRequestStatus);
     void unfriend(String currentUser, Long friendId);
     void deleteFriendRequest(String currentUser, Long strangerId);

@@ -33,6 +33,12 @@ public class FriendshipController {
                                                   @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
         return friendshipService.fetchAllFriendRequest(userId ,pageNo,pageSize);
     }
+    @GetMapping("/list/{userId}")
+    public UserListResponse fetchAllUserFriends(@PathVariable("userId") Long userId,
+                                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
+        return friendshipService.fetchAllUserFriends(userId,pageNo,pageSize);
+    }
     @GetMapping("/status/{friendId}")
     public FriendshipStatusResponse getFriendshipStatus(@PathVariable("friendId") Long friendId) {
         String currentUser = userService.getAuthenticatedUser();
