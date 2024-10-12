@@ -41,6 +41,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "guestPoster", cascade = CascadeType.ALL)
+    private List<Post> guestPosts = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PostLike> postLikes = new ArrayList<>();
 

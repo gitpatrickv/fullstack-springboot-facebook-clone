@@ -44,13 +44,22 @@ public class PostServiceImpl implements PostService {
     private final PostImageRepository postImageRepository;
     @Transactional
     @Override
-    public void createPost(String email, String content, MultipartFile[] files) {
+    public void createPost(String email, Long userId, String content, MultipartFile[] files) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+        User guestPoster = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+        Long currentUserId = user.getUserId();
 
         Post post = new Post();
         post.setContent(content);
         post.setTimestamp(LocalDateTime.now());
-        post.setUser(user);
+
+        if(currentUserId.equals(userId)) {
+            post.setUser(user);
+        } else {
+            post.setUser(guestPoster);
+            post.setGuestPoster(user);
+        }
+
         Post savedPost = postRepository.save(post);
 
         if (files != null && files.length > 0) {

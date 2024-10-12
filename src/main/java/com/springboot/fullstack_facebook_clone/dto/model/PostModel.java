@@ -28,6 +28,8 @@ public class PostModel {
     private String lastName;
     private String profilePicture;
     List<PostImageModel> postImages = new ArrayList<>();
+    private UserDataModel guestPoster;
     private SharedPostResponse sharedPost;
     private PostImageModel sharedImage;
+
 }

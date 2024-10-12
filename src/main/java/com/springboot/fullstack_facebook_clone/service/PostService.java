@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface PostService {
 
-    void createPost(String email, String content, MultipartFile[] files);
+    void createPost(String email, Long userId, String content, MultipartFile[] files);
     PostListResponse fetchAllUserPosts(Long userId, int pageNo, int pageSize);
     void sharePost(String email, Long postId, SharePostRequest request);
     void sharePostImage(String email, Long postImageId, Long postId, SharePostRequest request);

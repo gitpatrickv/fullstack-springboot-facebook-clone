@@ -19,13 +19,14 @@ public class PostController {
     private final PostService postService;
     private final UserService userService;
 
-    @PostMapping(value = {"/save"},  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = {"/save/{userId}"},  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public void createPost(@RequestPart(value="post", required = false) String content,
-                                        @RequestPart(value = "file", required = false) MultipartFile[] files)
+    public void createPost(@PathVariable("userId") Long userId,
+                        @RequestPart(value="post", required = false) String content,
+                        @RequestPart(value = "file", required = false) MultipartFile[] files)
     {
         String currentUser = userService.getAuthenticatedUser();
-        postService.createPost(currentUser, content, files);
+        postService.createPost(currentUser,userId, content, files);
     }
     @GetMapping("/{userId}")
     public PostListResponse fetchAllUserPosts(@PathVariable Long userId,

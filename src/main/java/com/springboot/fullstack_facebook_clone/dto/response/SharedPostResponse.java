@@ -2,6 +2,7 @@ package com.springboot.fullstack_facebook_clone.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.springboot.fullstack_facebook_clone.dto.model.PostImageModel;
+import com.springboot.fullstack_facebook_clone.dto.model.UserDataModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,5 @@ public class SharedPostResponse {
     private String lastName;
     private String profilePicture;
     List<PostImageModel> postImages = new ArrayList<>();
+    private UserDataModel guestPoster;
 }
