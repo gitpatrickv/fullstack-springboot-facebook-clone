@@ -1,5 +1,8 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
+import com.springboot.fullstack_facebook_clone.dto.model.PostImageModel;
+import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PhotoListResponse;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
@@ -7,6 +10,10 @@ import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -15,6 +22,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,6 +42,7 @@ public class PostImageServiceImpl implements PostImageService {
                 PostImage postImage = new PostImage();
                 postImage.setPost(post.get());
                 postImage.setPostImageUrl(this.processPostImages(postId, file));
+                postImage.setTimestamp(LocalDateTime.now());
                 postImageRepository.save(postImage);
             }
         }
@@ -64,5 +75,34 @@ public class PostImageServiceImpl implements PostImageService {
         } catch (Exception exception) {
             throw new RuntimeException("Unable to save image");
         }
+    }
+
+    @Override
+    public PhotoListResponse fetchAllPhotos(Long userId, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
+        Page<PostImage> postImages = postImageRepository.findAllPostImagesByUserId(userId, pageable);
+        PageResponse pageResponse = this.getPagination(postImages);
+
+        List<PostImageModel> postImageModels = new ArrayList<>();
+
+        for(PostImage postImage : postImages){
+            PostImageModel postImageModel = new PostImageModel();
+            postImageModel.setPostImageId(postImage.getPostImageId());
+            postImageModel.setPostImageUrl(postImage.getPostImageUrl());
+            postImageModel.setTimestamp(postImage.getTimestamp());
+            postImageModels.add(postImageModel);
+        }
+
+        return new PhotoListResponse(postImageModels,pageResponse);
+    }
+
+    private PageResponse getPagination(Page<PostImage> images){
+        PageResponse pageResponse = new PageResponse();
+        pageResponse.setPageNo(images.getNumber());
+        pageResponse.setPageSize(images.getSize());
+        pageResponse.setTotalElements(images.getTotalElements());
+        pageResponse.setTotalPages(images.getTotalPages());
+        pageResponse.setLast(images.isLast());
+        return pageResponse;
     }
 }
