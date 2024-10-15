@@ -66,6 +66,12 @@ public class PostController {
     public PostResponse findPostById(@PathVariable("postId") Long postId) {
         return postService.findPostById(postId);
     }
+    @GetMapping("/get/all")
+    public PostListResponse fetchAllPosts(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                         @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        String currentUser = userService.getAuthenticatedUser();
+        return postService.fetchAllPosts(currentUser,pageNo,pageSize);
+    }
 }
 
 
