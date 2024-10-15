@@ -2,10 +2,7 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.PostModel;
 import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
-import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
-import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
-import com.springboot.fullstack_facebook_clone.dto.response.SharedPostCountResponse;
-import com.springboot.fullstack_facebook_clone.dto.response.SharedPostResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.*;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.User;
@@ -173,6 +170,25 @@ public class PostServiceImpl implements PostService {
         } else {
             throw new NoSuchElementException(StringUtil.USER_NOT_FOUND + email);
         }
+    }
+
+    @Override
+    public PostResponse findPostById(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_NOT_FOUND + postId));
+
+        PostResponse postResponse = new PostResponse();
+
+        postResponse.setPostId(post.getPostId());
+        postResponse.setPostTimestamp(post.getTimestamp());
+        postResponse.setContent(post.getContent());
+
+        User poster = post.getGuestPoster() != null ? post.getGuestPoster() : post.getUser();
+        postResponse.setUserId(poster.getUserId());
+        postResponse.setFirstName(poster.getFirstName());
+        postResponse.setLastName(poster.getLastName());
+        postResponse.setProfilePicture(poster.getProfilePicture());
+
+        return postResponse;
     }
 
     private PostModel getPostById(Post post, PostMapper postMapper) {

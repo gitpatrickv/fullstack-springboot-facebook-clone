@@ -2,6 +2,7 @@ package com.springboot.fullstack_facebook_clone.controller;
 
 import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.SharedPostCountResponse;
 import com.springboot.fullstack_facebook_clone.service.PostService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
@@ -59,6 +60,11 @@ public class PostController {
     public void deletePost(@PathVariable("postId") Long postId){
         String currentUser = userService.getAuthenticatedUser();
         postService.deletePost(currentUser, postId);
+    }
+
+    @GetMapping("/find/{postId}")
+    public PostResponse findPostById(@PathVariable("postId") Long postId) {
+        return postService.findPostById(postId);
     }
 }
 

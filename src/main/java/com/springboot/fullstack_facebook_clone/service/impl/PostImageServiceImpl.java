@@ -1,8 +1,8 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
-import com.springboot.fullstack_facebook_clone.dto.model.PostImageModel;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PhotoListResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostImageResponse;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
@@ -83,17 +83,19 @@ public class PostImageServiceImpl implements PostImageService {
         Page<PostImage> postImages = postImageRepository.findAllPostImagesByUserId(userId, pageable);
         PageResponse pageResponse = this.getPagination(postImages);
 
-        List<PostImageModel> postImageModels = new ArrayList<>();
+        List<PostImageResponse> postImageResponses = new ArrayList<>();
 
         for(PostImage postImage : postImages){
-            PostImageModel postImageModel = new PostImageModel();
-            postImageModel.setPostImageId(postImage.getPostImageId());
-            postImageModel.setPostImageUrl(postImage.getPostImageUrl());
-            postImageModel.setTimestamp(postImage.getTimestamp());
-            postImageModels.add(postImageModel);
+            PostImageResponse postImageResponse = new PostImageResponse();
+            postImageResponse.setPostImageId(postImage.getPostImageId());
+            postImageResponse.setPostImageUrl(postImage.getPostImageUrl());
+            postImageResponse.setTimestamp(postImage.getTimestamp());
+            postImageResponse.setPostId(postImage.getPost().getPostId());
+
+            postImageResponses.add(postImageResponse);
         }
 
-        return new PhotoListResponse(postImageModels,pageResponse);
+        return new PhotoListResponse(postImageResponses,pageResponse);
     }
 
     private PageResponse getPagination(Page<PostImage> images){

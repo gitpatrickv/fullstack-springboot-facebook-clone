@@ -13,6 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class PhotoListResponse {
 
-    List<PostImageModel> postImageModels = new ArrayList<>();
+    List<PostImageResponse> postImageModels = new ArrayList<>();
     private PageResponse pageResponse;
 }
