@@ -21,6 +21,7 @@ public class PostCommentModel {
     private String firstName;
     private String lastName;
     private String profilePicture;
+    private Long userId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime timestamp;
 }

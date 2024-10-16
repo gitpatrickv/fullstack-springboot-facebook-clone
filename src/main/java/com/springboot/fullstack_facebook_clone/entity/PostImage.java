@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "post_images")
-public class PostImage {
+public class PostImage extends Timestamp{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

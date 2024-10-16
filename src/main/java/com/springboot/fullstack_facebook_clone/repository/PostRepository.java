@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -21,4 +23,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("SELECT COUNT(p) FROM Post p WHERE p.sharedImage.postImageId = :postImageId")
     Long countSharedPostImage(@Param("postImageId") Long postImageId);
+
+    @Query("SELECT p FROM Post p WHERE p.user.userId = :userId OR p.user.userId IN :friendId")
+    Page<Post> findPostsByUserIdAndFriendId(@Param("userId") Long userId,
+                                             @Param("friendId") List<Long> friendId,
+                                             Pageable pageable);
 }

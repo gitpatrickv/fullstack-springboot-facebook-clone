@@ -66,6 +66,7 @@ public class PostCommentServiceImpl implements PostCommentService {
             postCommentModel.setLastName(postComment.getUser().getLastName());
             postCommentModel.setProfilePicture(postComment.getUser().getProfilePicture());
             postCommentModel.setTimestamp(postComment.getTimestamp());
+            postCommentModel.setUserId(postComment.getUser().getUserId());
             postCommentModelList.add(postCommentModel);
         }
 

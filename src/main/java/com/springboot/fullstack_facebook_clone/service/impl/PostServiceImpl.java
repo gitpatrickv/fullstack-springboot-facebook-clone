@@ -2,10 +2,8 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.PostModel;
 import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
-import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
-import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
-import com.springboot.fullstack_facebook_clone.dto.response.SharedPostCountResponse;
-import com.springboot.fullstack_facebook_clone.dto.response.SharedPostResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.*;
+import com.springboot.fullstack_facebook_clone.entity.Friendship;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.User;
@@ -44,13 +42,22 @@ public class PostServiceImpl implements PostService {
     private final PostImageRepository postImageRepository;
     @Transactional
     @Override
-    public void createPost(String email, String content, MultipartFile[] files) {
+    public void createPost(String email, Long userId, String content, MultipartFile[] files) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+        User guestPoster = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+        Long currentUserId = user.getUserId();
 
         Post post = new Post();
         post.setContent(content);
         post.setTimestamp(LocalDateTime.now());
-        post.setUser(user);
+
+        if(currentUserId.equals(userId)) {
+            post.setUser(user);
+        } else {
+            post.setUser(guestPoster);
+            post.setGuestPoster(user);
+        }
+
         Post savedPost = postRepository.save(post);
 
         if (files != null && files.length > 0) {
@@ -67,20 +74,43 @@ public class PostServiceImpl implements PostService {
         List<PostModel> postModelList = new ArrayList<>();
 
         for(Post post : posts){
-            PostModel postModel = this.getPostById(post,postMapper);
-            postModelList.add(postModel);
-
-            if(post.getSharedPost() != null){
+            PostModel postModel = this.getPost(post,postMapper);
+            if(post.getSharedPost() != null) {
                 Post sharedPost = post.getSharedPost();
-                SharedPostResponse sharedPostResponse = sharedPostMapper.mapEntityToModel(sharedPost);
-                sharedPostResponse.setUserId(sharedPost.getUser().getUserId());
-                sharedPostResponse.setFirstName(sharedPost.getUser().getFirstName());
-                sharedPostResponse.setLastName(sharedPost.getUser().getLastName());
-                sharedPostResponse.setProfilePicture(sharedPost.getUser().getProfilePicture());
-                postModel.setSharedPost(sharedPostResponse);
+                postModel.setSharedPost(this.getSharedPost(sharedPost));
             }
+            postModelList.add(postModel);
         }
         return new PostListResponse(postModelList, pageResponse);
+    }
+
+    @Override
+    public PostListResponse fetchAllPosts(String email, int pageNo, int pageSize) {
+        User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
+
+        Long userId = currentUser.getUserId();
+        List<Long> friendIds = new ArrayList<>();
+
+        for(Friendship friendship : currentUser.getFriends()){
+            Long friendId = friendship.getFriends().getUserId();
+            friendIds.add(friendId);
+        }
+
+        Page<Post> posts = postRepository.findPostsByUserIdAndFriendId(userId, friendIds, pageable);
+        PageResponse pageResponse = this.getPagination(posts);
+        List<PostModel> postModelList = new ArrayList<>();
+
+        for(Post post : posts){
+            PostModel postModel = this.getPost(post,postMapper);
+            if(post.getSharedPost() != null) {
+                Post sharedPost = post.getSharedPost();
+                postModel.setSharedPost(this.getSharedPost(sharedPost));
+            }
+            postModelList.add(postModel);
+        }
+
+        return new PostListResponse(postModelList,pageResponse);
     }
 
     @Override
@@ -166,13 +196,43 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    private PostModel getPostById(Post post, PostMapper postMapper) {
+    @Override
+    public PostResponse findPostById(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_NOT_FOUND + postId));
+
+        PostResponse postResponse = new PostResponse();
+
+        postResponse.setPostId(post.getPostId());
+        postResponse.setPostTimestamp(post.getTimestamp());
+        postResponse.setContent(post.getContent());
+
+        User poster = post.getGuestPoster() != null ? post.getGuestPoster() : post.getUser();
+        postResponse.setUserId(poster.getUserId());
+        postResponse.setFirstName(poster.getFirstName());
+        postResponse.setLastName(poster.getLastName());
+        postResponse.setProfilePicture(poster.getProfilePicture());
+
+        return postResponse;
+    }
+
+    private PostModel getPost(Post post, PostMapper postMapper) {
         PostModel postModel = postMapper.mapEntityToModel(post);
         postModel.setUserId(post.getUser().getUserId());
         postModel.setFirstName(post.getUser().getFirstName());
         postModel.setLastName(post.getUser().getLastName());
         postModel.setProfilePicture(post.getUser().getProfilePicture());
         return postModel;
+    }
+
+    private SharedPostResponse getSharedPost(Post sharedPost){
+
+        SharedPostResponse sharedPostResponse = sharedPostMapper.mapEntityToModel(sharedPost);
+        sharedPostResponse.setUserId(sharedPost.getUser().getUserId());
+        sharedPostResponse.setFirstName(sharedPost.getUser().getFirstName());
+        sharedPostResponse.setLastName(sharedPost.getUser().getLastName());
+        sharedPostResponse.setProfilePicture(sharedPost.getUser().getProfilePicture());
+
+        return sharedPostResponse;
     }
 
     private PageResponse getPagination(Page<Post> posts){

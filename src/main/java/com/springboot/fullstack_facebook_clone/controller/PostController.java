@@ -2,6 +2,7 @@ package com.springboot.fullstack_facebook_clone.controller;
 
 import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.PostResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.SharedPostCountResponse;
 import com.springboot.fullstack_facebook_clone.service.PostService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
@@ -19,13 +20,14 @@ public class PostController {
     private final PostService postService;
     private final UserService userService;
 
-    @PostMapping(value = {"/save"},  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = {"/save/{userId}"},  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public void createPost(@RequestPart(value="post", required = false) String content,
-                                        @RequestPart(value = "file", required = false) MultipartFile[] files)
+    public void createPost(@PathVariable("userId") Long userId,
+                        @RequestPart(value="post", required = false) String content,
+                        @RequestPart(value = "file", required = false) MultipartFile[] files)
     {
         String currentUser = userService.getAuthenticatedUser();
-        postService.createPost(currentUser, content, files);
+        postService.createPost(currentUser,userId, content, files);
     }
     @GetMapping("/{userId}")
     public PostListResponse fetchAllUserPosts(@PathVariable Long userId,
@@ -58,6 +60,17 @@ public class PostController {
     public void deletePost(@PathVariable("postId") Long postId){
         String currentUser = userService.getAuthenticatedUser();
         postService.deletePost(currentUser, postId);
+    }
+
+    @GetMapping("/find/{postId}")
+    public PostResponse findPostById(@PathVariable("postId") Long postId) {
+        return postService.findPostById(postId);
+    }
+    @GetMapping("/get/all")
+    public PostListResponse fetchAllPosts(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                         @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        String currentUser = userService.getAuthenticatedUser();
+        return postService.fetchAllPosts(currentUser,pageNo,pageSize);
     }
 }
 

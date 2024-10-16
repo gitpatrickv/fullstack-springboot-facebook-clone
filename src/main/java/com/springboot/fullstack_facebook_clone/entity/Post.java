@@ -33,6 +33,10 @@ public class Post extends Timestamp{
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "guest_poster_id")
+    private User guestPoster;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostLike> postLikes = new ArrayList<>();
 
