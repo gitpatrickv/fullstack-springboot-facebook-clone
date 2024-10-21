@@ -103,6 +103,27 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
+    public UserListResponse fetchAllFriendSuggestions(Long userid, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<User> userList = friendshipRepository.findFriendSuggestions(userid,pageable);
+        PageResponse pageResponse = this.getUserPagination(userList);
+
+       List<UserDataModel> userDataModels = new ArrayList<>();
+
+       for(User user : userList){
+           UserDataModel userDataModel = new UserDataModel();
+           userDataModel.setUniqueId(user.getUserId() + 1000L);
+           userDataModel.setUserId(user.getUserId());
+           userDataModel.setFirstName(user.getFirstName());
+           userDataModel.setLastName(user.getLastName());
+           userDataModel.setProfilePicture(user.getProfilePicture());
+           userDataModels.add(userDataModel);
+       }
+
+        return new UserListResponse(userDataModels,pageResponse);
+    }
+
+    @Override
     public FriendshipStatusResponse getFriendshipStatus(String currentUser, Long friendId, boolean isRequestStatus) {
         User user = userRepository.findByEmail(currentUser)
                 .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
@@ -187,6 +208,16 @@ public class FriendshipServiceImpl implements FriendshipService {
         pageResponse.setTotalElements(friendships.getTotalElements());
         pageResponse.setTotalPages(friendships.getTotalPages());
         pageResponse.setLast(friendships.isLast());
+        return pageResponse;
+    }
+
+    private PageResponse getUserPagination(Page<User> users){
+        PageResponse pageResponse = new PageResponse();
+        pageResponse.setPageNo(users.getNumber());
+        pageResponse.setPageSize(users.getSize());
+        pageResponse.setTotalElements(users.getTotalElements());
+        pageResponse.setTotalPages(users.getTotalPages());
+        pageResponse.setLast(users.isLast());
         return pageResponse;
     }
 }
