@@ -12,4 +12,5 @@ public class StringUtil {
     public static final String X_REQUESTED_WITH = "X-Requested-With";
     public static final String POST_IMAGE_NOT_FOUND = "Post image not found with id: ";
     public static final String FRIEND_REQUEST_NOT_ALLOWED = "You can't send a friend request to yourself.";
+    public static final String FRIEND_REQUEST_ALREADY_EXISTS = "User already sent a friend request";
 }

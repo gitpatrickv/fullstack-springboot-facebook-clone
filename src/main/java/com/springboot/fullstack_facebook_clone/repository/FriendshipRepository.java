@@ -29,7 +29,10 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     Long getFriendListCount(@Param("userId") Long userId);
 
     @Query("SELECT u FROM User u WHERE u.userId != :userId " +
-            "AND u.userId NOT IN (SELECT f.friends.userId FROM Friendship f WHERE f.user.userId = :userId)")
+            "AND u.userId NOT IN (SELECT f.friends.userId FROM Friendship f WHERE f.user.userId = :userId) " +
+            "AND u.userId NOT IN (SELECT f.friends.userId FROM Friendship f WHERE f.user.userId = :userId AND f.status = 'PENDING') " +
+            "AND u.userId NOT IN (SELECT f.user.userId FROM Friendship f WHERE f.friends.userId = :userId AND f.status = 'PENDING')"
+        )
     Page<User> findFriendSuggestions(@Param("userId") Long userId,
                                      Pageable pageable);
 

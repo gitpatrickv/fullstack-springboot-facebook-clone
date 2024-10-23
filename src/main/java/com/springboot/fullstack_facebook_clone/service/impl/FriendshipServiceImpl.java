@@ -11,6 +11,7 @@ import com.springboot.fullstack_facebook_clone.entity.constants.FriendshipStatus
 import com.springboot.fullstack_facebook_clone.repository.FriendshipRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.FriendshipService;
+import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,15 +34,20 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     private final UserRepository userRepository;
     private final FriendshipRepository friendshipRepository;
+    private final UserService userService;
 
     @Override
     public void addToFriend(String currentUser, Long strangerUserId) {
         User user = userRepository.findByEmail(currentUser)
                 .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
         Optional<Friendship> friendRequest = friendshipRepository.findByFriendship(user.getUserId(), strangerUserId, FriendshipStatus.PENDING);
-
+        Optional<Friendship> friendRequestFromOtherUser = friendshipRepository.findByFriendship(strangerUserId, user.getUserId(), FriendshipStatus.PENDING);
         if(user.getUserId().equals(strangerUserId)){
             throw new IllegalArgumentException(StringUtil.FRIEND_REQUEST_NOT_ALLOWED);
+        }
+
+        if(friendRequestFromOtherUser.isPresent()){
+            throw new IllegalArgumentException(StringUtil.FRIEND_REQUEST_ALREADY_EXISTS);
         }
 
         if(friendRequest.isPresent()){
@@ -106,19 +112,8 @@ public class FriendshipServiceImpl implements FriendshipService {
     public UserListResponse fetchAllFriendSuggestions(Long userid, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<User> userList = friendshipRepository.findFriendSuggestions(userid,pageable);
-        PageResponse pageResponse = this.getUserPagination(userList);
-
-       List<UserDataModel> userDataModels = new ArrayList<>();
-
-       for(User user : userList){
-           UserDataModel userDataModel = new UserDataModel();
-           userDataModel.setUniqueId(user.getUserId() + 1000L);
-           userDataModel.setUserId(user.getUserId());
-           userDataModel.setFirstName(user.getFirstName());
-           userDataModel.setLastName(user.getLastName());
-           userDataModel.setProfilePicture(user.getProfilePicture());
-           userDataModels.add(userDataModel);
-       }
+        PageResponse pageResponse = userService.getUserPagination(userList);
+        List<UserDataModel> userDataModels = userService.getUserDataModels(userList);
 
         return new UserListResponse(userDataModels,pageResponse);
     }
@@ -208,16 +203,6 @@ public class FriendshipServiceImpl implements FriendshipService {
         pageResponse.setTotalElements(friendships.getTotalElements());
         pageResponse.setTotalPages(friendships.getTotalPages());
         pageResponse.setLast(friendships.isLast());
-        return pageResponse;
-    }
-
-    private PageResponse getUserPagination(Page<User> users){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(users.getNumber());
-        pageResponse.setPageSize(users.getSize());
-        pageResponse.setTotalElements(users.getTotalElements());
-        pageResponse.setTotalPages(users.getTotalPages());
-        pageResponse.setLast(users.isLast());
         return pageResponse;
     }
 }
