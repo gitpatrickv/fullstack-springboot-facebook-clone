@@ -50,4 +50,7 @@ public class Post extends Timestamp{
     @OneToMany(mappedBy = "sharedPost", cascade = CascadeType.ALL)
     private List<Post> sharedPosts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<Notification> notifications = new ArrayList<>();
+
 }

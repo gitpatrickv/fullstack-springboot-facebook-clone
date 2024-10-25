@@ -35,11 +35,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize ->
                                 authorize
+                                        .requestMatchers("/ws/**").permitAll()
                                         .requestMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                                         .requestMatchers(HttpMethod.GET, "/api/post/image/**").permitAll()
                                         .requestMatchers("/api/user/**").permitAll()
                                         .requestMatchers("/api/post/**").hasAuthority(USER.name())
                                         .requestMatchers("/api/friends/**").hasAuthority(USER.name())
+                                        .requestMatchers("/api/notifications/**").hasAuthority(USER.name())
                                         .anyRequest().authenticated()
                 );
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
