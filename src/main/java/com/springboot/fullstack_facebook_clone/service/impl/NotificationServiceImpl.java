@@ -14,12 +14,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
@@ -41,6 +44,14 @@ public class NotificationServiceImpl implements NotificationService {
 
         return new NotificationResponse(notificationModels, pageResponse);
     }
+
+    @Override
+    public void markAsRead(Long notificationId) {
+        Optional<Notification> notification = notificationRepository.findById(notificationId);
+
+        notification.ifPresent(value -> value.setRead(true));
+    }
+
 
     private PageResponse getPagination(Page<Notification> notifications){
         PageResponse pageResponse = new PageResponse();

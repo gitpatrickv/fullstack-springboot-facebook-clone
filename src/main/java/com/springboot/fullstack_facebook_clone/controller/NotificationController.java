@@ -17,4 +17,8 @@ public class NotificationController {
                                                      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         return notificationService.fetchAllNotifications(userId,pageNo,pageSize);
     }
+    @PostMapping("/{notificationId}")
+    public void markAsRead(@PathVariable("notificationId") Long notificationId) {
+        notificationService.markAsRead(notificationId);
+    }
 }
