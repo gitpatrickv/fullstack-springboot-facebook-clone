@@ -1,6 +1,7 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.NotificationModel;
+import com.springboot.fullstack_facebook_clone.dto.response.CountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.NotificationResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.entity.Notification;
@@ -50,6 +51,14 @@ public class NotificationServiceImpl implements NotificationService {
         Optional<Notification> notification = notificationRepository.findById(notificationId);
 
         notification.ifPresent(value -> value.setRead(true));
+    }
+
+    @Override
+    public CountResponse getNotificationCount(Long userId) {
+        Long count = notificationRepository.countNotification(userId);
+        CountResponse countResponse = new CountResponse();
+        countResponse.setCount(count);
+        return countResponse;
     }
 
 

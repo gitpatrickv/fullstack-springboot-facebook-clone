@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
+import com.springboot.fullstack_facebook_clone.dto.response.CountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.NotificationResponse;
 import com.springboot.fullstack_facebook_clone.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +21,9 @@ public class NotificationController {
     @PostMapping("/{notificationId}")
     public void markAsRead(@PathVariable("notificationId") Long notificationId) {
         notificationService.markAsRead(notificationId);
+    }
+    @GetMapping("/count/{userId}")
+    public CountResponse getNotificationCount(@PathVariable("userId") Long userId) {
+        return notificationService.getNotificationCount(userId);
     }
 }
