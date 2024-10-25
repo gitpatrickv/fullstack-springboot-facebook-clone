@@ -5,9 +5,12 @@ import com.springboot.fullstack_facebook_clone.dto.response.LikeResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostLikeCountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
+import com.springboot.fullstack_facebook_clone.entity.Notification;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostLike;
 import com.springboot.fullstack_facebook_clone.entity.User;
+import com.springboot.fullstack_facebook_clone.entity.constants.NotificationType;
+import com.springboot.fullstack_facebook_clone.repository.NotificationRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostLikeRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
@@ -34,6 +37,7 @@ public class PostLikeServiceImpl implements PostLikeService {
     private final PostLikeRepository postLikeRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     @Override
@@ -44,12 +48,26 @@ public class PostLikeServiceImpl implements PostLikeService {
 
         if (optionalPostLike.isPresent()) {
             postLikeRepository.deleteByPost_PostIdAndUser_UserId(postId, user.getUserId());
+            notificationRepository.deleteByPost_PostIdAndSender_UserId(postId, user.getUserId());
         } else {
             PostLike postLike = new PostLike();
             postLike.setTimestamp(LocalDateTime.now());
             postLike.setPost(post);
             postLike.setUser(user);
             postLikeRepository.save(postLike);
+
+            if(!post.getUser().getUserId().equals(user.getUserId())) {
+                Notification notification = new Notification();
+                notification.setMessage(StringUtil.LIKES_YOUR_POST);
+                notification.setRead(false);
+                notification.setNotificationType(NotificationType.POST_LIKED);
+                notification.setTimestamp(LocalDateTime.now());
+                notification.setPost(post);
+                notification.setReceiver(post.getUser());
+                notification.setSender(user);
+
+                notificationRepository.save(notification);
+            }
         }
     }
 
