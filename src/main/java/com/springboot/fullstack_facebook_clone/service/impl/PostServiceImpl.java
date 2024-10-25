@@ -197,7 +197,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse findPostById(Long postId) {
+    public PostResponse findPostCreatorById(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_NOT_FOUND + postId));
 
         PostResponse postResponse = new PostResponse();
@@ -215,6 +215,19 @@ public class PostServiceImpl implements PostService {
         return postResponse;
     }
 
+    @Override
+    public PostModel getPostById(Long postId) {
+
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_NOT_FOUND + postId));
+
+        PostModel postModel = this.getPost(post, postMapper);
+        if(post.getSharedPost()!=null){
+            Post sharedPost = post.getSharedPost();
+            postModel.setSharedPost(this.getSharedPost(sharedPost));
+        }
+
+        return postModel;
+    }
     private PostModel getPost(Post post, PostMapper postMapper) {
         PostModel postModel = postMapper.mapEntityToModel(post);
         postModel.setUserId(post.getUser().getUserId());
