@@ -10,10 +10,12 @@ import com.springboot.fullstack_facebook_clone.service.NotificationService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.NotificationMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +26,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Override
     public NotificationResponse fetchAllNotifications(Long userId, int pageNo, int pageSize) {
@@ -61,6 +65,15 @@ public class NotificationServiceImpl implements NotificationService {
         return countResponse;
     }
 
+    @Override
+    public void sendNotification(String email, NotificationModel notificationModel) {
+        log.info("sending WS to {} with payload {}", email, notificationModel);
+        try {
+            messagingTemplate.convertAndSendToUser(email, "/notifications", notificationModel);
+        } catch (Exception e) {
+            log.error("Error sending notification: {}", e.getMessage(), e);
+        }
+    }
 
     private PageResponse getPagination(Page<Notification> notifications){
         PageResponse pageResponse = new PageResponse();

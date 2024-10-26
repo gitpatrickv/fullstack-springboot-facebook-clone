@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
+import com.springboot.fullstack_facebook_clone.dto.model.NotificationModel;
 import com.springboot.fullstack_facebook_clone.dto.model.UserDataModel;
 import com.springboot.fullstack_facebook_clone.dto.response.LikeResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
@@ -14,10 +15,13 @@ import com.springboot.fullstack_facebook_clone.repository.NotificationRepository
 import com.springboot.fullstack_facebook_clone.repository.PostLikeRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
+import com.springboot.fullstack_facebook_clone.service.NotificationService;
 import com.springboot.fullstack_facebook_clone.service.PostLikeService;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
+import com.springboot.fullstack_facebook_clone.utils.mapper.NotificationMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,13 +35,15 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-
+@Slf4j
 public class PostLikeServiceImpl implements PostLikeService {
 
     private final PostLikeRepository postLikeRepository;
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
+    private final NotificationMapper notificationMapper;
 
     @Transactional
     @Override
@@ -66,7 +72,21 @@ public class PostLikeServiceImpl implements PostLikeService {
                 notification.setReceiver(post.getUser());
                 notification.setSender(user);
 
-                notificationRepository.save(notification);
+                Notification savedNotification = notificationRepository.save(notification);
+
+                UserDataModel userDataModel = new UserDataModel();
+                userDataModel.setUniqueId(user.getUserId() + 1000);
+                userDataModel.setUserId(user.getUserId());
+                userDataModel.setProfilePicture(user.getProfilePicture());
+                userDataModel.setFirstName(user.getFirstName());
+                userDataModel.setLastName(user.getLastName());
+
+                NotificationModel notificationModel = notificationMapper.mapEntityToModel(savedNotification);
+                notificationModel.setContent(post.getContent());
+                notificationModel.setSender(userDataModel);
+
+                notificationService.sendNotification(post.getUser().getEmail(), notificationModel);
+
             }
         }
     }
