@@ -1,19 +1,25 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
+import com.springboot.fullstack_facebook_clone.dto.model.NotificationModel;
 import com.springboot.fullstack_facebook_clone.dto.model.UserDataModel;
 import com.springboot.fullstack_facebook_clone.dto.response.CountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.FriendshipStatusResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 import com.springboot.fullstack_facebook_clone.entity.Friendship;
+import com.springboot.fullstack_facebook_clone.entity.Notification;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.entity.constants.FriendshipStatus;
+import com.springboot.fullstack_facebook_clone.entity.constants.NotificationType;
 import com.springboot.fullstack_facebook_clone.repository.FriendshipRepository;
+import com.springboot.fullstack_facebook_clone.repository.NotificationRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.FriendshipService;
+import com.springboot.fullstack_facebook_clone.service.NotificationService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
+import com.springboot.fullstack_facebook_clone.utils.mapper.NotificationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +43,9 @@ public class FriendshipServiceImpl implements FriendshipService {
     private final FriendshipRepository friendshipRepository;
     private final UserService userService;
     private final Pagination pagination;
+    private final NotificationRepository notificationRepository;
+    private final NotificationMapper notificationMapper;
+    private final NotificationService notificationService;
 
     @Override
     public void addToFriend(String currentUser, Long strangerUserId) {
@@ -54,6 +63,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
         if(friendRequest.isPresent()){
             friendshipRepository.deleteByUser_UserIdAndFriends_UserId(user.getUserId(), strangerUserId);
+            notificationRepository.deleteByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType.FRIEND_REQUEST, user.getUserId(), strangerUserId);
         }
         else {
             User stranger = userRepository.findById(strangerUserId)
@@ -65,6 +75,21 @@ public class FriendshipServiceImpl implements FriendshipService {
             friendship.setStatus(FriendshipStatus.PENDING);
             friendship.setTimestamp(LocalDateTime.now());
             friendshipRepository.save(friendship);
+
+            Notification notification = new Notification();
+            notification.setMessage("sent you a friend request.");
+            notification.setRead(false);
+            notification.setNotificationType(NotificationType.FRIEND_REQUEST);
+            notification.setTimestamp(LocalDateTime.now());
+            notification.setReceiver(stranger);
+            notification.setSender(user);
+
+            Notification savedNotification = notificationRepository.save(notification);
+
+            NotificationModel notificationModel = notificationMapper.mapEntityToModel(savedNotification);
+            notificationModel.getSender().setUniqueId(user.getUserId() + 1000);
+
+            notificationService.sendNotification(stranger.getEmail(), notificationModel);
         }
     }
 
@@ -87,6 +112,27 @@ public class FriendshipServiceImpl implements FriendshipService {
             friendship.setStatus(FriendshipStatus.FRIENDS);
             friendship.setTimestamp(LocalDateTime.now());
             friendshipRepository.save(friendship);
+
+            Notification notification = new Notification();
+            notification.setMessage("accepted your friend request.");
+            notification.setRead(false);
+            notification.setNotificationType(NotificationType.FRIEND_ACCEPTED);
+            notification.setTimestamp(LocalDateTime.now());
+            notification.setReceiver(stranger);
+            notification.setSender(user);
+
+            Notification savedNotification = notificationRepository.save(notification);
+
+            NotificationModel notificationModel = notificationMapper.mapEntityToModel(savedNotification);
+            notificationModel.getSender().setUniqueId(user.getUserId() + 1000);
+
+            notificationService.sendNotification(stranger.getEmail(), notificationModel);
+
+            Notification getNotification = notificationRepository.findByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType.FRIEND_REQUEST, strangerUserId, user.getUserId());
+            getNotification.setNotificationType(NotificationType.FRIEND_ACCEPTED);
+            notificationRepository.save(getNotification);
+        } else {
+            throw new NoSuchElementException(StringUtil.FRIEND_REQUEST_NOT_FOUND);
         }
     }
 

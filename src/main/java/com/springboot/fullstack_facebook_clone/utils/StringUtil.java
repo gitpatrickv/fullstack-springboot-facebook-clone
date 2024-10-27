@@ -14,4 +14,6 @@ public class StringUtil {
     public static final String FRIEND_REQUEST_NOT_ALLOWED = "You can't send a friend request to yourself.";
     public static final String FRIEND_REQUEST_ALREADY_EXISTS = "User already sent a friend request";
     public static final String LIKES_YOUR_POST = "likes your post";
+    public static final String FRIEND_REQUEST_NOT_FOUND = "Friend request not found";
+
 }

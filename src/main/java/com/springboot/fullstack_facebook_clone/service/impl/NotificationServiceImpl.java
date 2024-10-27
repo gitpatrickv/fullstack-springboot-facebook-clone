@@ -5,6 +5,7 @@ import com.springboot.fullstack_facebook_clone.dto.response.CountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.NotificationResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.entity.Notification;
+import com.springboot.fullstack_facebook_clone.entity.constants.NotificationType;
 import com.springboot.fullstack_facebook_clone.repository.NotificationRepository;
 import com.springboot.fullstack_facebook_clone.service.NotificationService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
@@ -45,7 +46,9 @@ public class NotificationServiceImpl implements NotificationService {
 
         for(Notification notification : notifications){
             NotificationModel model = notificationMapper.mapEntityToModel(notification);
-            model.setContent(notification.getPost().getContent());
+            if(notification.getNotificationType().equals(NotificationType.POST_LIKED)) {
+                model.setContent(notification.getPost().getContent());
+            }
             notificationModels.add(model);
         }
 

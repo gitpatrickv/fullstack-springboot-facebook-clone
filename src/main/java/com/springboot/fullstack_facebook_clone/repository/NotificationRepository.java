@@ -1,6 +1,7 @@
 package com.springboot.fullstack_facebook_clone.repository;
 
 import com.springboot.fullstack_facebook_clone.entity.Notification;
+import com.springboot.fullstack_facebook_clone.entity.constants.NotificationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Query("SELECT COUNT(n) FROM Notification n WHERE n.receiver.userId = :userId AND n.isRead IS FALSE")
     Long countNotification(@Param("userId") Long userId);
+
+    void deleteByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType notificationType, Long senderId, Long receiverId);
+    Notification findByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType notificationType, Long senderId, Long receiverId);
 }
