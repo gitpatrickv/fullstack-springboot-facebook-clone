@@ -12,6 +12,7 @@ import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.PostCommentService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
+import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     private final PostCommentRepository postCommentRepository;
     private final PostRepository postRepository;
     private final UserService userService;
+    private final Pagination pagination;
     @Override
     public void writePostComment(String email, Long postId, String comment, MultipartFile file) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
@@ -53,7 +55,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     public PostCommentListResponse fetchAllPostComments(Long postId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<PostComment> postComments = postCommentRepository.findAllByPost_PostId(postId, pageable);
-        PageResponse pageResponse = this.getPagination(postComments);
+        PageResponse pageResponse = pagination.getPagination(postComments);
 
         List<PostCommentModel> postCommentModelList = new ArrayList<>();
 
@@ -81,15 +83,5 @@ public class PostCommentServiceImpl implements PostCommentService {
         countResponse.setPostCommentCount(commentCount);
 
         return countResponse;
-    }
-
-    private PageResponse getPagination(Page<PostComment> postComments){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(postComments.getNumber());
-        pageResponse.setPageSize(postComments.getSize());
-        pageResponse.setTotalElements(postComments.getTotalElements());
-        pageResponse.setTotalPages(postComments.getTotalPages());
-        pageResponse.setLast(postComments.isLast());
-        return pageResponse;
     }
 }

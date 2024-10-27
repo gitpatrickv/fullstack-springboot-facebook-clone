@@ -12,6 +12,7 @@ import com.springboot.fullstack_facebook_clone.repository.FriendshipRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.FriendshipService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
+import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,6 +36,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     private final UserRepository userRepository;
     private final FriendshipRepository friendshipRepository;
     private final UserService userService;
+    private final Pagination pagination;
 
     @Override
     public void addToFriend(String currentUser, Long strangerUserId) {
@@ -92,7 +94,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     public UserListResponse fetchAllFriendRequest(Long userId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
         Page<Friendship> friendships = friendshipRepository.findAllByStatusAndFriends_UserId(FriendshipStatus.PENDING, userId, pageable);
-        PageResponse pageResponse = this.getPagination(friendships);
+        PageResponse pageResponse = pagination.getPagination(friendships);
 
         List<UserDataModel> userDataModels = this.getUserDataModels(friendships);
         return new UserListResponse(userDataModels,pageResponse);
@@ -102,7 +104,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     public UserListResponse fetchAllUserFriends(Long userId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
         Page<Friendship> friendships = friendshipRepository.findAllByStatusAndUser_UserId(FriendshipStatus.FRIENDS, userId, pageable);
-        PageResponse pageResponse = this.getPagination(friendships);
+        PageResponse pageResponse = pagination.getPagination(friendships);
 
         List<UserDataModel> userDataModels = this.getFriendsDataModels(friendships);
         return new UserListResponse(userDataModels,pageResponse);
@@ -194,15 +196,5 @@ public class FriendshipServiceImpl implements FriendshipService {
             userDataModels.add(userDataModel);
         }
         return userDataModels;
-    }
-
-    private PageResponse getPagination(Page<Friendship> friendships){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(friendships.getNumber());
-        pageResponse.setPageSize(friendships.getSize());
-        pageResponse.setTotalElements(friendships.getTotalElements());
-        pageResponse.setTotalPages(friendships.getTotalPages());
-        pageResponse.setLast(friendships.isLast());
-        return pageResponse;
     }
 }

@@ -12,6 +12,7 @@ import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.service.PostService;
+import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.PostMapper;
 import com.springboot.fullstack_facebook_clone.utils.mapper.SharedPostMapper;
@@ -40,6 +41,7 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
     private final SharedPostMapper sharedPostMapper;
     private final PostImageRepository postImageRepository;
+    private final Pagination pagination;
     @Transactional
     @Override
     public void createPost(String email, Long userId, String content, MultipartFile[] files) {
@@ -69,7 +71,7 @@ public class PostServiceImpl implements PostService {
     public PostListResponse fetchAllUserPosts(Long userId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
         Page<Post> posts = postRepository.findAllByUser_UserId(userId, pageable);
-        PageResponse pageResponse = this.getPagination(posts);
+        PageResponse pageResponse = pagination.getPagination(posts);
 
         List<PostModel> postModelList = new ArrayList<>();
 
@@ -98,7 +100,7 @@ public class PostServiceImpl implements PostService {
         }
 
         Page<Post> posts = postRepository.findPostsByUserIdAndFriendId(userId, friendIds, pageable);
-        PageResponse pageResponse = this.getPagination(posts);
+        PageResponse pageResponse = pagination.getPagination(posts);
         List<PostModel> postModelList = new ArrayList<>();
 
         for(Post post : posts){
@@ -246,15 +248,5 @@ public class PostServiceImpl implements PostService {
         sharedPostResponse.setProfilePicture(sharedPost.getUser().getProfilePicture());
 
         return sharedPostResponse;
-    }
-
-    private PageResponse getPagination(Page<Post> posts){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(posts.getNumber());
-        pageResponse.setPageSize(posts.getSize());
-        pageResponse.setTotalElements(posts.getTotalElements());
-        pageResponse.setTotalPages(posts.getTotalPages());
-        pageResponse.setLast(posts.isLast());
-        return pageResponse;
     }
 }

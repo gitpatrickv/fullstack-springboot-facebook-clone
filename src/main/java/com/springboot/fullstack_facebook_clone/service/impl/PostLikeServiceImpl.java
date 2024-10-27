@@ -17,6 +17,7 @@ import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.NotificationService;
 import com.springboot.fullstack_facebook_clone.service.PostLikeService;
+import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.NotificationMapper;
 import jakarta.transaction.Transactional;
@@ -44,6 +45,7 @@ public class PostLikeServiceImpl implements PostLikeService {
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
     private final NotificationMapper notificationMapper;
+    private final Pagination pagination;
 
     @Transactional
     @Override
@@ -109,7 +111,7 @@ public class PostLikeServiceImpl implements PostLikeService {
     public UserListResponse getPostLikeUserList(Long postId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<PostLike> postLikes = postLikeRepository.findAllByPost_PostId(postId, pageable);
-        PageResponse pageResponse = this.getPagination(postLikes);
+        PageResponse pageResponse = pagination.getPagination(postLikes);
 
         List<UserDataModel> userDataModels = new ArrayList<>();
 
@@ -124,16 +126,6 @@ public class PostLikeServiceImpl implements PostLikeService {
         }
 
         return new UserListResponse(userDataModels,pageResponse);
-    }
-
-    private PageResponse getPagination(Page<PostLike> postLikes){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(postLikes.getNumber());
-        pageResponse.setPageSize(postLikes.getSize());
-        pageResponse.setTotalElements(postLikes.getTotalElements());
-        pageResponse.setTotalPages(postLikes.getTotalPages());
-        pageResponse.setLast(postLikes.isLast());
-        return pageResponse;
     }
 
 }

@@ -7,6 +7,7 @@ import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.entity.Notification;
 import com.springboot.fullstack_facebook_clone.repository.NotificationRepository;
 import com.springboot.fullstack_facebook_clone.service.NotificationService;
+import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.NotificationMapper;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +33,13 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
     private final NotificationMapper notificationMapper;
     private final SimpMessagingTemplate messagingTemplate;
+    private final Pagination pagination;
 
     @Override
     public NotificationResponse fetchAllNotifications(Long userId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
         Page<Notification> notifications = notificationRepository.findAllByReceiver_UserId(userId, pageable);
-        PageResponse pageResponse = this.getPagination(notifications);
+        PageResponse pageResponse = pagination.getPagination(notifications);
 
         List<NotificationModel> notificationModels = new ArrayList<>();
 
@@ -73,15 +75,5 @@ public class NotificationServiceImpl implements NotificationService {
         } catch (Exception e) {
             log.error("Error sending notification: {}", e.getMessage(), e);
         }
-    }
-
-    private PageResponse getPagination(Page<Notification> notifications){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(notifications.getNumber());
-        pageResponse.setPageSize(notifications.getSize());
-        pageResponse.setTotalElements(notifications.getTotalElements());
-        pageResponse.setTotalPages(notifications.getTotalPages());
-        pageResponse.setLast(notifications.isLast());
-        return pageResponse;
     }
 }

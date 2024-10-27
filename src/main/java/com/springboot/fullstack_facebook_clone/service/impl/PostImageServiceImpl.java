@@ -8,6 +8,7 @@ import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.service.PostImageService;
+import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class PostImageServiceImpl implements PostImageService {
 
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
+    private final Pagination pagination;
     @Override
     public void uploadPostImages(Long postId, MultipartFile[] files) {
         Optional<Post> post = postRepository.findById(postId);
@@ -81,7 +83,7 @@ public class PostImageServiceImpl implements PostImageService {
     public PhotoListResponse fetchAllPhotos(Long userId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
         Page<PostImage> postImages = postImageRepository.findAllPostImagesByUserId(userId, pageable);
-        PageResponse pageResponse = this.getPagination(postImages);
+        PageResponse pageResponse = pagination.getPagination(postImages);
 
         List<PostImageResponse> postImageResponses = new ArrayList<>();
 
@@ -96,15 +98,5 @@ public class PostImageServiceImpl implements PostImageService {
         }
 
         return new PhotoListResponse(postImageResponses,pageResponse);
-    }
-
-    private PageResponse getPagination(Page<PostImage> images){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(images.getNumber());
-        pageResponse.setPageSize(images.getSize());
-        pageResponse.setTotalElements(images.getTotalElements());
-        pageResponse.setTotalPages(images.getTotalPages());
-        pageResponse.setLast(images.isLast());
-        return pageResponse;
     }
 }
