@@ -74,19 +74,11 @@ public class PostLikeServiceImpl implements PostLikeService {
 
                 Notification savedNotification = notificationRepository.save(notification);
 
-                UserDataModel userDataModel = new UserDataModel();
-                userDataModel.setUniqueId(user.getUserId() + 1000);
-                userDataModel.setUserId(user.getUserId());
-                userDataModel.setProfilePicture(user.getProfilePicture());
-                userDataModel.setFirstName(user.getFirstName());
-                userDataModel.setLastName(user.getLastName());
-
                 NotificationModel notificationModel = notificationMapper.mapEntityToModel(savedNotification);
                 notificationModel.setContent(post.getContent());
-                notificationModel.setSender(userDataModel);
+                notificationModel.getSender().setUniqueId(user.getUserId() + 1000);
 
                 notificationService.sendNotification(post.getUser().getEmail(), notificationModel);
-
             }
         }
     }
