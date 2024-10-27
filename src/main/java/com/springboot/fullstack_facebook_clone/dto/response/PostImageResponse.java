@@ -13,7 +13,7 @@ public class PostImageResponse {
 
     private Long postImageId;
     private String postImageUrl;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
     private Long postId;
 }
