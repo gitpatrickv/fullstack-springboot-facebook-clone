@@ -128,9 +128,11 @@ public class FriendshipServiceImpl implements FriendshipService {
 
             notificationService.sendNotification(stranger.getEmail(), notificationModel);
 
-            Notification getNotification = notificationRepository.findByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType.FRIEND_REQUEST, strangerUserId, user.getUserId());
-            getNotification.setNotificationType(NotificationType.FRIEND_ACCEPTED);
-            notificationRepository.save(getNotification);
+            Optional<Notification> getNotification = notificationRepository.findByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType.FRIEND_REQUEST, strangerUserId, user.getUserId());
+            if(getNotification.isPresent()) {
+                getNotification.get().setNotificationType(NotificationType.FRIEND_ACCEPTED);
+                notificationRepository.save(getNotification.get());
+            }
         } else {
             throw new NoSuchElementException(StringUtil.FRIEND_REQUEST_NOT_FOUND);
         }

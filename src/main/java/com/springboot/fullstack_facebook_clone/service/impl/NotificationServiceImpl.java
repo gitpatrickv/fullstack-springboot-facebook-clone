@@ -79,4 +79,10 @@ public class NotificationServiceImpl implements NotificationService {
             log.error("Error sending notification: {}", e.getMessage(), e);
         }
     }
+
+    @Override
+    public void deleteNotification(Long notificationId) {
+        Optional<Notification> notification = notificationRepository.findById(notificationId);
+        notification.ifPresent(notificationRepository::delete);
+    }
 }

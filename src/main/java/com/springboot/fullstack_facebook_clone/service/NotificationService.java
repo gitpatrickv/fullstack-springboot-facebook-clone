@@ -10,4 +10,5 @@ public interface NotificationService {
     void markAsRead(Long notificationId);
     CountResponse getNotificationCount(Long userId);
     void sendNotification(String email, NotificationModel notificationModel);
+    void deleteNotification(Long notificationId);
 }

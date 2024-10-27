@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
@@ -19,5 +21,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     Long countNotification(@Param("userId") Long userId);
 
     void deleteByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType notificationType, Long senderId, Long receiverId);
-    Notification findByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType notificationType, Long senderId, Long receiverId);
+    Optional<Notification> findByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType notificationType, Long senderId, Long receiverId);
+
 }
