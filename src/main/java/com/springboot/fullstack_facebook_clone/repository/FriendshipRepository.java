@@ -36,4 +36,6 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     Page<User> findFriendSuggestions(@Param("userId") Long userId,
                                      Pageable pageable);
 
+    void deleteByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus status, Long userId, Long friendId);
+
 }

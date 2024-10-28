@@ -128,11 +128,7 @@ public class FriendshipServiceImpl implements FriendshipService {
 
             notificationService.sendNotification(stranger.getEmail(), notificationModel);
 
-            Optional<Notification> getNotification = notificationRepository.findByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType.FRIEND_REQUEST, strangerUserId, user.getUserId());
-            if(getNotification.isPresent()) {
-                getNotification.get().setNotificationType(NotificationType.FRIEND_ACCEPTED);
-                notificationRepository.save(getNotification.get());
-            }
+            notificationRepository.deleteByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType.FRIEND_REQUEST, strangerUserId, user.getUserId());
         } else {
             throw new NoSuchElementException(StringUtil.FRIEND_REQUEST_NOT_FOUND);
         }
@@ -193,17 +189,17 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Override
     public void unfriend(Long userId, Long friendId) {
 
-        Optional<Friendship> friendship1 = friendshipRepository.findByFriendship(userId, friendId, FriendshipStatus.FRIENDS);
-        friendship1.ifPresent(friendshipRepository::delete);
+        friendshipRepository.deleteByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus.FRIENDS, friendId, userId);
+        friendshipRepository.deleteByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus.FRIENDS, userId, friendId);
+        notificationRepository.deleteByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType.FRIEND_ACCEPTED, friendId, userId);
+        notificationRepository.deleteByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType.FRIEND_ACCEPTED, userId, friendId);
 
-        Optional<Friendship> friendship2 = friendshipRepository.findByFriendship(friendId, userId, FriendshipStatus.FRIENDS);
-        friendship2.ifPresent(friendshipRepository::delete);
     }
 
     @Override
     public void deleteFriendRequest(Long userId, Long strangerId) {
-        Optional<Friendship> friendship = friendshipRepository.findByFriendship(strangerId, userId, FriendshipStatus.PENDING);
-        friendship.ifPresent(friendshipRepository::delete);
+        friendshipRepository.deleteByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus.PENDING, strangerId, userId);
+        notificationRepository.deleteByNotificationTypeAndSender_UserIdAndReceiver_UserId(NotificationType.FRIEND_REQUEST, strangerId, userId);
     }
 
     @Override

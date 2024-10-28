@@ -82,7 +82,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void deleteNotification(Long notificationId) {
-        Optional<Notification> notification = notificationRepository.findById(notificationId);
-        notification.ifPresent(notificationRepository::delete);
+        notificationRepository.deleteById(notificationId);
     }
 }
