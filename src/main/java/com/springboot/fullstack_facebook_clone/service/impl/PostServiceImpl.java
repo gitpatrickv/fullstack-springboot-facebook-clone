@@ -7,6 +7,7 @@ import com.springboot.fullstack_facebook_clone.entity.Friendship;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.User;
+import com.springboot.fullstack_facebook_clone.entity.constants.FriendshipStatus;
 import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
@@ -95,8 +96,10 @@ public class PostServiceImpl implements PostService {
         List<Long> friendIds = new ArrayList<>();
 
         for(Friendship friendship : currentUser.getFriends()){
-            Long friendId = friendship.getFriends().getUserId();
-            friendIds.add(friendId);
+            if(friendship.getStatus().equals(FriendshipStatus.FRIENDS)) {
+                Long friendId = friendship.getFriends().getUserId();
+                friendIds.add(friendId);
+            }
         }
 
         Page<Post> posts = postRepository.findPostsByUserIdAndFriendId(userId, friendIds, pageable);
