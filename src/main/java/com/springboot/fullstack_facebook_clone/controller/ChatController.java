@@ -1,0 +1,27 @@
+package com.springboot.fullstack_facebook_clone.controller;
+
+import com.springboot.fullstack_facebook_clone.dto.response.ChatIdResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.ChatResponse;
+import com.springboot.fullstack_facebook_clone.service.ChatService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/chat")
+@RequiredArgsConstructor
+public class ChatController {
+
+    private final ChatService chatService;
+    @PostMapping("/{userId}/{friendId}")
+    public ChatIdResponse chatUser(@PathVariable("userId") Long userId,
+                                     @PathVariable("friendId") Long friendId){
+       return chatService.chatUser(userId,friendId);
+    }
+
+    @GetMapping("/{userId}")
+    public ChatResponse fetchAllUserChats(@PathVariable("userId") Long userId,
+                                         @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                         @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return chatService.fetchAllUserChats(userId,pageNo,pageSize);
+    }
+}

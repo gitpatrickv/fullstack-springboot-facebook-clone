@@ -3,10 +3,7 @@ package com.springboot.fullstack_facebook_clone.entity;
 import com.springboot.fullstack_facebook_clone.entity.constants.Gender;
 import com.springboot.fullstack_facebook_clone.entity.constants.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -66,7 +63,8 @@ public class User implements UserDetails {
     @JoinTable(
             name = "chat_user",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "chat_id")
+            inverseJoinColumns = @JoinColumn(name = "chat_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"chat_id", "user_id"})
     )
     private Set<Chat> chats = new HashSet<>();
 
