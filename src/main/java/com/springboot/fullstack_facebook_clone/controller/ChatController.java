@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
+import com.springboot.fullstack_facebook_clone.dto.model.ChatModel;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatIdResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatResponse;
 import com.springboot.fullstack_facebook_clone.service.ChatService;
@@ -23,5 +24,10 @@ public class ChatController {
                                          @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
                                          @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         return chatService.fetchAllUserChats(userId,pageNo,pageSize);
+    }
+    @GetMapping("/get/{chatId}/{userId}")
+    public ChatModel findChatById(@PathVariable("chatId") Long chatId,
+                                  @PathVariable("userId") Long userId) {
+        return chatService.findChatById(chatId,userId);
     }
 }

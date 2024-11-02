@@ -70,42 +70,49 @@ public class ChatServiceImpl implements ChatService {
         Page<Chat> chats = chatRepository.findAllUserChats(userId, pageable);
         PageResponse pageResponse = pagination.getPagination(chats);
 
-        List<ChatModel> chatModels = new ArrayList<>();
-
-        for(Chat chat : chats){
-
-            if(chat.getChatType().equals(ChatType.GROUP_CHAT)) {
-                ChatModel chatModel = chatMapper.mapEntityToModel(chat);
-                chatModels.add(chatModel);
-            }
-
-            if(chat.getChatType().equals(ChatType.PRIVATE_CHAT)) {
-                ChatModel chatModel = new ChatModel();
-                chatModel.setChatId(chat.getChatId());
-                chatModel.setChatType(chat.getChatType());
-
-                User otherUser = chat.getUsers()
-                        .stream()
-                        .filter(user1 -> !user1.getUserId().equals(userId))
-                        .findFirst()
-                        .orElse(null);
-
-                if(otherUser != null) {
-                    UserDataModel userDataModel = new UserDataModel();
-                    userDataModel.setUserId(otherUser.getUserId());
-                    userDataModel.setFirstName(otherUser.getFirstName());
-                    userDataModel.setLastName(otherUser.getLastName());
-                    userDataModel.setProfilePicture(otherUser.getProfilePicture());
-
-                    chatModel.setPrivateChatUser(userDataModel);
-                    chatModels.add(chatModel);
-                }
-            }
-        }
-
+        List<ChatModel> chatModels = chats.stream()
+                .map(chat -> this.mapChatToModel(chat,userId))
+                .toList();
 
         return new ChatResponse(chatModels,pageResponse);
     }
+
+    @Override
+    public ChatModel findChatById(Long chatId, Long userId) {
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new NoSuchElementException("CHAT NOT FOUND " + chatId));
+        return this.mapChatToModel(chat, userId);
+    }
+
+    private ChatModel mapChatToModel(Chat chat, Long userId) {
+        ChatType chatType = chat.getChatType();
+
+        if (chatType.equals(ChatType.GROUP_CHAT)) {
+            return chatMapper.mapEntityToModel(chat);
+        }
+
+        if (chatType.equals(ChatType.PRIVATE_CHAT)) {
+            ChatModel chatModel = new ChatModel();
+            chatModel.setChatId(chat.getChatId());
+            chatModel.setChatType(chatType);
+
+            User otherUser = chat.getUsers()
+                    .stream()
+                    .filter(user -> !user.getUserId().equals(userId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (otherUser != null) {
+                UserDataModel userDataModel = new UserDataModel();
+                userDataModel.setUserId(otherUser.getUserId());
+                userDataModel.setFirstName(otherUser.getFirstName());
+                userDataModel.setLastName(otherUser.getLastName());
+                userDataModel.setProfilePicture(otherUser.getProfilePicture());
+
+                chatModel.setPrivateChatUser(userDataModel);
+            }
+            return chatModel;
+        }
+        return null;
+    }
 }
-
-
