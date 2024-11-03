@@ -80,7 +80,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public ChatModel findChatById(Long chatId, Long userId) {
         Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new NoSuchElementException("CHAT NOT FOUND " + chatId));
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + chatId));
         return this.mapChatToModel(chat, userId);
     }
 

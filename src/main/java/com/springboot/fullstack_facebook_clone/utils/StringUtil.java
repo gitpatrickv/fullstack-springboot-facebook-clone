@@ -15,5 +15,6 @@ public class StringUtil {
     public static final String FRIEND_REQUEST_ALREADY_EXISTS = "User already sent a friend request";
     public static final String LIKES_YOUR_POST = "likes your post";
     public static final String FRIEND_REQUEST_NOT_FOUND = "Friend request not found";
+    public static final String CHAT_NOT_FOUND = "Chat not found with ID: ";
 
 }

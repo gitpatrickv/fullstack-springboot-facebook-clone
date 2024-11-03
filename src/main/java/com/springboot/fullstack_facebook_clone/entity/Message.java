@@ -18,7 +18,6 @@ public class Message extends Timestamp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long messageId;
     private String message;
-    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "chat_id")
