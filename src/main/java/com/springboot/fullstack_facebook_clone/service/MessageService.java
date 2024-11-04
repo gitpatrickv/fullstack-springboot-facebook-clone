@@ -5,6 +5,6 @@ import com.springboot.fullstack_facebook_clone.dto.response.MessageResponse;
 
 public interface MessageService {
 
-    void sendMessage(SendMessageRequest request);
+    void sendMessage(String email, SendMessageRequest request);
     MessageResponse fetchAllChatMessages (Long chatId, int pageNo, int pageSize);
 }

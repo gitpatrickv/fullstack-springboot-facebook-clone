@@ -42,9 +42,9 @@ public class MessageServiceImpl implements MessageService {
     private final MessageMapper messageMapper;
 
     @Override
-    public void sendMessage(SendMessageRequest request) {
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + request.getUserId()));
+    public void sendMessage(String email, SendMessageRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
         Optional<Chat> chat = chatRepository.findById(request.getChatId());
 
         if(chat.isPresent()) {
@@ -53,8 +53,8 @@ public class MessageServiceImpl implements MessageService {
             message.setTimestamp(LocalDateTime.now());
             message.setChat(chat.get());
             message.setSender(user);
-            messageRepository.save(message);
-
+            Message savedMessage = messageRepository.save(message);
+            MessageModel messageModel = messageMapper.mapEntityToModel(savedMessage);
             if (chat.get().getChatType().equals(ChatType.PRIVATE_CHAT)) {
                 User otherUser = chat.get().getUsers()
                         .stream()
@@ -63,9 +63,9 @@ public class MessageServiceImpl implements MessageService {
                         .orElse(null);
 
                 if (otherUser != null) {
-                    log.info("sending WS chat to {} with payload {}", chat.get().getChatId(), request);
+                    log.info("sending WS chat to {} with payload {}", chat.get().getChatId(), messageModel);
                     try {
-                        messagingTemplate.convertAndSendToUser(otherUser.getEmail(), "/chat", request);
+                        messagingTemplate.convertAndSendToUser(otherUser.getEmail(), "/chat", messageModel);
                     } catch (Exception e) {
                         log.error("Error sending chat: {}", e.getMessage());
                     }
