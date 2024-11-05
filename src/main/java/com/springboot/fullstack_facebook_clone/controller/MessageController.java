@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
+import com.springboot.fullstack_facebook_clone.dto.model.MessageModel;
 import com.springboot.fullstack_facebook_clone.dto.request.SendMessageRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.MessageResponse;
 import com.springboot.fullstack_facebook_clone.service.MessageService;
@@ -25,5 +26,9 @@ public class MessageController {
                                                 @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
                                                 @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         return messageService.fetchAllChatMessages(chatId, pageNo, pageSize);
+    }
+    @GetMapping("/last/{chatId}")
+    public MessageModel getLastMessage(@PathVariable("chatId") Long chatId) {
+        return messageService.getLastMessage(chatId);
     }
 }

@@ -90,4 +90,16 @@ public class MessageServiceImpl implements MessageService {
 
         return new MessageResponse(messageModelList, pageResponse);
     }
+
+    @Override
+    public MessageModel getLastMessage(Long chatId) {
+        PageRequest pageRequest = PageRequest.of(0, 1);
+        List<Message> messages = messageRepository.findLastMessageByChatId(chatId, pageRequest);
+        return messages.stream()
+                .findFirst()
+                .map(messageMapper::mapEntityToModel)
+                .orElse(null);
+    }
+
+
 }
