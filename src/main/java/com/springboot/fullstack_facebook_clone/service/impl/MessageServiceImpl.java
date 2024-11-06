@@ -63,7 +63,7 @@ public class MessageServiceImpl implements MessageService {
                         .orElse(null);
 
                 if (otherUser != null) {
-                    log.info("sending WS chat to {} with payload {}", chat.get().getChatId(), messageModel);
+                    log.info("sending WS chat to {} with payload {}", otherUser.getEmail(), messageModel);
                     try {
                         messagingTemplate.convertAndSendToUser(otherUser.getEmail(), "/chat", messageModel);
                     } catch (Exception e) {
@@ -72,6 +72,15 @@ public class MessageServiceImpl implements MessageService {
                 }
             }
 
+            if (chat.get().getChatType().equals(ChatType.GROUP_CHAT)) {
+                log.info("sending WS group chat to {} with payload {}", chat.get().getGroupChatName(), messageModel);
+                try {
+                    messagingTemplate.convertAndSend("/topic/chat/" + savedMessage.getChat().getChatId(), messageModel);
+                } catch (Exception e) {
+                    log.error("Error sending chat: {}", e.getMessage());
+                }
+
+            }
         }
     }
 

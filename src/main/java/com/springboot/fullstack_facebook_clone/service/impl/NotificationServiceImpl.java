@@ -72,7 +72,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendNotification(String email, NotificationModel notificationModel) {
-        log.info("sending WS to {} with payload {}", email, notificationModel);
+        log.info("sending WS notification to {} with payload {}", email, notificationModel);
         try {
             messagingTemplate.convertAndSendToUser(email, "/notifications", notificationModel);
         } catch (Exception e) {
