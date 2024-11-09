@@ -33,7 +33,7 @@ public class ChatController {
         return chatService.findChatById(chatId,userId);
     }
     @PostMapping("/group/create/{userId}")
-    public void createGroupChat(@PathVariable("userId") Long userId, @RequestBody @Valid GroupChatRequest request) {
-        chatService.createGroupChat(userId,request);
+    public ChatIdResponse createGroupChat(@PathVariable("userId") Long userId, @RequestBody @Valid GroupChatRequest request) {
+        return chatService.createGroupChat(userId,request);
     }
 }

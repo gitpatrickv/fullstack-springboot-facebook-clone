@@ -10,5 +10,5 @@ public interface ChatService {
     ChatIdResponse chatUser(Long userId, Long friendId);
     ChatResponse fetchAllUserChats(Long userId, int pageNo, int pageSize);
     ChatModel findChatById(Long chatId, Long userId);
-    void createGroupChat(Long userId, GroupChatRequest request);
+    ChatIdResponse createGroupChat(Long userId, GroupChatRequest request);
 }

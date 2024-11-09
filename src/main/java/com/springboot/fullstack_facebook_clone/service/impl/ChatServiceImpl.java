@@ -89,7 +89,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void createGroupChat(Long userId, GroupChatRequest request) {
+    public ChatIdResponse createGroupChat(Long userId, GroupChatRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
 
@@ -116,6 +116,11 @@ public class ChatServiceImpl implements ChatService {
             message.setSender(user);
             messageRepository.save(message);
         }
+
+        ChatIdResponse chatIdResponse = new ChatIdResponse();
+        chatIdResponse.setChatId(savedChat.getChatId());
+
+        return chatIdResponse;
     }
 
     private ChatModel mapChatToModel(Chat chat, Long userId) {
