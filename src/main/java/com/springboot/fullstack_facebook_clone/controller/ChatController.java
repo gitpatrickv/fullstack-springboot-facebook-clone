@@ -1,9 +1,11 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
 import com.springboot.fullstack_facebook_clone.dto.model.ChatModel;
+import com.springboot.fullstack_facebook_clone.dto.request.GroupChatRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatIdResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatResponse;
 import com.springboot.fullstack_facebook_clone.service.ChatService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,5 +31,9 @@ public class ChatController {
     public ChatModel findChatById(@PathVariable("chatId") Long chatId,
                                   @PathVariable("userId") Long userId) {
         return chatService.findChatById(chatId,userId);
+    }
+    @PostMapping("/group/create/{userId}")
+    public void createGroupChat(@PathVariable("userId") Long userId, @RequestBody @Valid GroupChatRequest request) {
+        chatService.createGroupChat(userId,request);
     }
 }

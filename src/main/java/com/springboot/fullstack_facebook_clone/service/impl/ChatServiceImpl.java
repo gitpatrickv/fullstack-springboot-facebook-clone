@@ -2,13 +2,16 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.ChatModel;
 import com.springboot.fullstack_facebook_clone.dto.model.UserDataModel;
+import com.springboot.fullstack_facebook_clone.dto.request.GroupChatRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatIdResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PageResponse;
 import com.springboot.fullstack_facebook_clone.entity.Chat;
+import com.springboot.fullstack_facebook_clone.entity.Message;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.entity.constants.ChatType;
 import com.springboot.fullstack_facebook_clone.repository.ChatRepository;
+import com.springboot.fullstack_facebook_clone.repository.MessageRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.ChatService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
@@ -33,6 +36,7 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final ChatMapper chatMapper;
     private final Pagination pagination;
+    private final MessageRepository messageRepository;
 
     @Override
     public ChatIdResponse chatUser(Long userId, Long friendId) {
@@ -82,6 +86,36 @@ public class ChatServiceImpl implements ChatService {
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + chatId));
         return this.mapChatToModel(chat, userId);
+    }
+
+    @Override
+    public void createGroupChat(Long userId, GroupChatRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+
+        request.getFriendId().add(user.getUserId());
+
+        List<User> users =  userRepository.findAllById(request.getFriendId());
+        Set<User> userSet = new HashSet<>(users);
+
+        Chat chat = new Chat();
+        chat.setChatType(ChatType.GROUP_CHAT);
+        chat.setTimestamp(LocalDateTime.now());
+        chat.setUsers(userSet);
+        Chat savedChat = chatRepository.save(chat);
+
+        for(User user1 : userSet){
+            user1.getChats().add(savedChat);
+        }
+
+        if(savedChat.getChatId() != null) {
+            Message message = new Message();
+            message.setMessage(request.getText());
+            message.setTimestamp(LocalDateTime.now());
+            message.setChat(savedChat);
+            message.setSender(user);
+            messageRepository.save(message);
+        }
     }
 
     private ChatModel mapChatToModel(Chat chat, Long userId) {
