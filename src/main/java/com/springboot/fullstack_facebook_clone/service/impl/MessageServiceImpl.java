@@ -54,7 +54,13 @@ public class MessageServiceImpl implements MessageService {
             message.setChat(chat.get());
             message.setSender(user);
             Message savedMessage = messageRepository.save(message);
+
+            Chat updateChat = chat.get();
+            updateChat.setTimestamp(LocalDateTime.now());
+            chatRepository.save(updateChat);
+
             MessageModel messageModel = messageMapper.mapEntityToModel(savedMessage);
+
             if (chat.get().getChatType().equals(ChatType.PRIVATE_CHAT)) {
                 User otherUser = chat.get().getUsers()
                         .stream()
