@@ -1,6 +1,7 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
 import com.springboot.fullstack_facebook_clone.dto.model.ChatModel;
+import com.springboot.fullstack_facebook_clone.dto.request.GroupChatNameRequest;
 import com.springboot.fullstack_facebook_clone.dto.request.GroupChatRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatIdResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatResponse;
@@ -41,5 +42,9 @@ public class ChatController {
     public void uploadGroupChatPhoto(@PathVariable("chatId") Long chatId,
                                      @RequestParam(value = "file") MultipartFile files){
         chatService.uploadGroupChatPhoto(chatId,files);
+    }
+    @PostMapping("/group/change/name")
+    public void updateGroupChatName(@RequestBody @Valid GroupChatNameRequest request) {
+        chatService.updateGroupChatName(request);
     }
 }

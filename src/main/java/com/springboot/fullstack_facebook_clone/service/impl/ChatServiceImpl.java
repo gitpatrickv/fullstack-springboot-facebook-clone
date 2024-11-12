@@ -2,6 +2,7 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.ChatModel;
 import com.springboot.fullstack_facebook_clone.dto.model.UserDataModel;
+import com.springboot.fullstack_facebook_clone.dto.request.GroupChatNameRequest;
 import com.springboot.fullstack_facebook_clone.dto.request.GroupChatRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatIdResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatResponse;
@@ -129,16 +130,39 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void uploadGroupChatPhoto(Long chatId, MultipartFile file) {
-        Optional<Chat> optionalChat = chatRepository.findById(chatId);
 
-        if(optionalChat.isPresent()
-                && optionalChat.get().getChatType().equals(ChatType.GROUP_CHAT)){
-            if(file != null) {
-                Chat chat = optionalChat.get();
-                chat.setGroupChatImage(userService.processImage(file));
-                chatRepository.save(chat);
-            }
+        if(file == null){
+            throw new IllegalArgumentException("File cannot be null");
         }
+
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + chatId));
+
+        if(chat.getChatType() != ChatType.GROUP_CHAT) {
+            throw new IllegalStateException(StringUtil.NOT_GROUP_CHAT);
+        }
+
+        chat.setGroupChatImage(userService.processImage(file));
+        chatRepository.save(chat);
+
+    }
+
+    @Override
+    public void updateGroupChatName(GroupChatNameRequest request) {
+
+        if(request.getName() == null){
+            throw new IllegalArgumentException("name cannot be null");
+        }
+
+        Chat chat = chatRepository.findById(request.getChatId())
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + request.getChatId()));
+
+        if(chat.getChatType() != ChatType.GROUP_CHAT) {
+            throw new IllegalStateException(StringUtil.NOT_GROUP_CHAT);
+        }
+
+        chat.setGroupChatName(request.getName());
+        chatRepository.save(chat);
     }
 
     private ChatModel mapChatToModel(Chat chat, Long userId) {
