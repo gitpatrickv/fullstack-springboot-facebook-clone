@@ -1,6 +1,7 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
 import com.springboot.fullstack_facebook_clone.dto.model.ChatModel;
+import com.springboot.fullstack_facebook_clone.dto.request.AddUserToGroupChatRequest;
 import com.springboot.fullstack_facebook_clone.dto.request.GroupChatNameRequest;
 import com.springboot.fullstack_facebook_clone.dto.request.GroupChatRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatIdResponse;
@@ -46,5 +47,11 @@ public class ChatController {
     @PostMapping("/group/change/name")
     public void updateGroupChatName(@RequestBody @Valid GroupChatNameRequest request) {
         chatService.updateGroupChatName(request);
+    }
+
+    @PostMapping("/group/add/user/{chatId}")
+    public void addUserToGroupChat(@PathVariable("chatId") Long chatId,
+                                   @RequestBody @Valid AddUserToGroupChatRequest request){
+        chatService.addUserToGroupChat(chatId, request);
     }
 }

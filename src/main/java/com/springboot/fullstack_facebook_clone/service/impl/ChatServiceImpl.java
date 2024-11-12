@@ -2,6 +2,7 @@ package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.ChatModel;
 import com.springboot.fullstack_facebook_clone.dto.model.UserDataModel;
+import com.springboot.fullstack_facebook_clone.dto.request.AddUserToGroupChatRequest;
 import com.springboot.fullstack_facebook_clone.dto.request.GroupChatNameRequest;
 import com.springboot.fullstack_facebook_clone.dto.request.GroupChatRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatIdResponse;
@@ -162,6 +163,24 @@ public class ChatServiceImpl implements ChatService {
         }
 
         chat.setGroupChatName(request.getName());
+        chatRepository.save(chat);
+    }
+
+    @Override
+    public void addUserToGroupChat(Long chatId, AddUserToGroupChatRequest request) {
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + chatId));
+
+        if (request.getUserId() == null || request.getUserId().isEmpty()) {
+            throw new IllegalArgumentException("User ID list cannot be null or empty");
+        }
+
+        for(Long id : request.getUserId()){
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + id));
+            chat.getUsers().add(user);
+            user.getChats().add(chat);
+        }
         chatRepository.save(chat);
     }
 

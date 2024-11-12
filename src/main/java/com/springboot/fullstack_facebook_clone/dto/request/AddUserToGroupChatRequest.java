@@ -4,11 +4,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
-public class GroupChatNameRequest {
+public class AddUserToGroupChatRequest {
+
     @NotNull
-    private Long chatId;
-    @NotNull
-    private String name;
+    private List<Long> userId;
 }
