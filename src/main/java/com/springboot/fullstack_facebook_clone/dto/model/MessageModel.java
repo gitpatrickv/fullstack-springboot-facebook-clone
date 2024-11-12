@@ -14,6 +14,7 @@ public class MessageModel {
 
     private Long messageId;
     private String message;
+    private String messageUpdate;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
     private Long chatId;

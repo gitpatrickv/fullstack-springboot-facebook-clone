@@ -180,6 +180,17 @@ public class ChatServiceImpl implements ChatService {
                     .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + id));
             chat.getUsers().add(user);
             user.getChats().add(chat);
+
+            String messageUpdate = user.getFirstName().substring(0, 1).toUpperCase() + user.getFirstName().substring(1).toLowerCase() + " " +
+                    user.getLastName().substring(0, 1).toUpperCase() + user.getLastName().substring(1).toLowerCase() +
+                    " joined the chat";
+
+            Message message = new Message();
+            message.setMessageUpdate(messageUpdate);
+            message.setTimestamp(LocalDateTime.now());
+            message.setChat(chat);
+            message.setSender(user);
+            messageRepository.save(message);
         }
         chatRepository.save(chat);
     }
