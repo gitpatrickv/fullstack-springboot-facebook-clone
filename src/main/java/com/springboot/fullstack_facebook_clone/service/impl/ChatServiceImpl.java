@@ -14,6 +14,7 @@ import com.springboot.fullstack_facebook_clone.repository.ChatRepository;
 import com.springboot.fullstack_facebook_clone.repository.MessageRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.ChatService;
+import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.ChatMapper;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -38,6 +40,7 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMapper chatMapper;
     private final Pagination pagination;
     private final MessageRepository messageRepository;
+    private final UserService userService;
 
     @Override
     public ChatIdResponse chatUser(Long userId, Long friendId) {
@@ -122,6 +125,20 @@ public class ChatServiceImpl implements ChatService {
         chatIdResponse.setChatId(savedChat.getChatId());
 
         return chatIdResponse;
+    }
+
+    @Override
+    public void uploadGroupChatPhoto(Long chatId, MultipartFile file) {
+        Optional<Chat> optionalChat = chatRepository.findById(chatId);
+
+        if(optionalChat.isPresent()
+                && optionalChat.get().getChatType().equals(ChatType.GROUP_CHAT)){
+            if(file != null) {
+                Chat chat = optionalChat.get();
+                chat.setGroupChatImage(userService.processImage(file));
+                chatRepository.save(chat);
+            }
+        }
     }
 
     private ChatModel mapChatToModel(Chat chat, Long userId) {

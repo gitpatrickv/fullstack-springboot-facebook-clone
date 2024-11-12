@@ -8,6 +8,7 @@ import com.springboot.fullstack_facebook_clone.service.ChatService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -35,5 +36,10 @@ public class ChatController {
     @PostMapping("/group/create/{userId}")
     public ChatIdResponse createGroupChat(@PathVariable("userId") Long userId, @RequestBody @Valid GroupChatRequest request) {
         return chatService.createGroupChat(userId,request);
+    }
+    @PostMapping("/group/upload/image/{chatId}")
+    public void uploadGroupChatPhoto(@PathVariable("chatId") Long chatId,
+                                     @RequestParam(value = "file") MultipartFile files){
+        chatService.uploadGroupChatPhoto(chatId,files);
     }
 }

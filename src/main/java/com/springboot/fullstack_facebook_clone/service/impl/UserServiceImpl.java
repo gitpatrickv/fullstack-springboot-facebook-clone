@@ -126,9 +126,9 @@ public class UserServiceImpl implements UserService {
 
             if(file != null) {
                 if (imageType.equals(ImageType.PROFILE_PICTURE)) {
-                    user.setProfilePicture(processUserImage(email, file));
+                    user.setProfilePicture(processImage(file));
                 } else if (imageType.equals(ImageType.COVER_PHOTO)) {
-                    user.setCoverPhoto(processUserImage(email, file));
+                    user.setCoverPhoto(processImage(file));
                 }
                 User savedUser = userRepository.save(user);
 
@@ -140,7 +140,7 @@ public class UserServiceImpl implements UserService {
 
                 PostImage postImage = new PostImage();
                 postImage.setPost(savedPost);
-                postImage.setPostImageUrl(processUserImage(email, file));
+                postImage.setPostImageUrl(processImage(file));
                 postImageRepository.save(postImage);
 
             }
@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String processUserImage(String email, MultipartFile image) {
+    public String processImage(MultipartFile image) {
         String filename = System.currentTimeMillis() + "_" + image.getOriginalFilename();
 
         try {

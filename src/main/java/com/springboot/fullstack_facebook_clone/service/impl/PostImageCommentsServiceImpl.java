@@ -43,7 +43,7 @@ public class PostImageCommentsServiceImpl implements PostImageCommentsService {
         PostImageComments postImageComments = new PostImageComments();
         postImageComments.setComment(comment);
         if(file != null) {
-            postImageComments.setCommentImage(userService.processUserImage(user.getEmail(), file));
+            postImageComments.setCommentImage(userService.processImage(file));
         }
         postImageComments.setUser(user);
         postImageComments.setPostImage(postImage);

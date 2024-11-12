@@ -43,7 +43,7 @@ public class PostCommentServiceImpl implements PostCommentService {
         PostComment postComment = new PostComment();
         postComment.setComment(comment);
         if(file != null) {
-            postComment.setCommentImage(userService.processUserImage(user.getEmail(), file));
+            postComment.setCommentImage(userService.processImage(file));
         }
         postComment.setUser(user);
         postComment.setPost(post);

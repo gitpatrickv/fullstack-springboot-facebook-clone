@@ -20,7 +20,7 @@ public interface UserService {
     UserModel getCurrentUserInfo(String email);
     UserModel getUserProfileInfo(Long userId);
     void uploadUserImage(String email, MultipartFile file, ImageType imageType, String description);
-    String processUserImage(String email, MultipartFile image);
+    String processImage(MultipartFile image);
     UserListResponse searchUser(String search,  int pageNo, int pageSize);
     PageResponse getUserPagination(Page<User> users);
     List<UserDataModel> getUserDataModels(Page<User> users);
