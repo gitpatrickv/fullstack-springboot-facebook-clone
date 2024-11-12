@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface PostCommentRepository extends JpaRepository<PostComment, Long> {
 
@@ -15,4 +17,7 @@ public interface PostCommentRepository extends JpaRepository<PostComment, Long> 
 
     @Query("SELECT COUNT(c) FROM PostComment c WHERE c.post.postId = :postId")
     Long countPostComment(@Param("postId") Long PostId);
+
+    @Query("SELECT p FROM PostComment p WHERE p.post.postId = :postId ORDER by p.timestamp DESC")
+    List<PostComment> findLastComment(@Param("postId") Long postId, Pageable pageable);
 }

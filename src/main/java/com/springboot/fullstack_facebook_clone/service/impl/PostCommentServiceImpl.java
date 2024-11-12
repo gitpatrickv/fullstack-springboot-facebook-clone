@@ -60,15 +60,7 @@ public class PostCommentServiceImpl implements PostCommentService {
         List<PostCommentModel> postCommentModelList = new ArrayList<>();
 
         for(PostComment postComment : postComments){
-            PostCommentModel postCommentModel = new PostCommentModel();
-            postCommentModel.setPostCommentId(postComment.getPostCommentId());
-            postCommentModel.setComment(postComment.getComment());
-            postCommentModel.setCommentImage(postComment.getCommentImage());
-            postCommentModel.setFirstName(postComment.getUser().getFirstName());
-            postCommentModel.setLastName(postComment.getUser().getLastName());
-            postCommentModel.setProfilePicture(postComment.getUser().getProfilePicture());
-            postCommentModel.setTimestamp(postComment.getTimestamp());
-            postCommentModel.setUserId(postComment.getUser().getUserId());
+            PostCommentModel postCommentModel = this.getPostComment(postComment);
             postCommentModelList.add(postCommentModel);
         }
 
@@ -84,4 +76,29 @@ public class PostCommentServiceImpl implements PostCommentService {
 
         return countResponse;
     }
+
+    @Override
+    public PostCommentModel getLastComment(Long postId) {
+        PageRequest pageRequest = PageRequest.of(0,1);
+        List<PostComment> postComments = postCommentRepository.findLastComment(postId,pageRequest);
+        return postComments.stream()
+                .findFirst()
+                .map(this::getPostComment)
+                .orElse(null);
+    }
+
+    private PostCommentModel getPostComment(PostComment postComment){
+        PostCommentModel postCommentModel = new PostCommentModel();
+        postCommentModel.setPostCommentId(postComment.getPostCommentId());
+        postCommentModel.setComment(postComment.getComment());
+        postCommentModel.setCommentImage(postComment.getCommentImage());
+        postCommentModel.setFirstName(postComment.getUser().getFirstName());
+        postCommentModel.setLastName(postComment.getUser().getLastName());
+        postCommentModel.setProfilePicture(postComment.getUser().getProfilePicture());
+        postCommentModel.setTimestamp(postComment.getTimestamp());
+        postCommentModel.setUserId(postComment.getUser().getUserId());
+
+        return postCommentModel;
+    }
+
 }
