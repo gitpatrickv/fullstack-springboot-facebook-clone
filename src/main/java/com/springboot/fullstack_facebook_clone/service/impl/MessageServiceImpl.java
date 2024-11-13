@@ -78,14 +78,18 @@ public class MessageServiceImpl implements MessageService {
                 }
             }
 
-            if (chat.get().getChatType().equals(ChatType.GROUP_CHAT)) {
-                log.info("sending WS group chat to {} with payload {}", chat.get().getGroupChatName(), messageModel);
-                try {
-                    messagingTemplate.convertAndSend("/topic/chat/" + savedMessage.getChat().getChatId(), messageModel);
-                } catch (Exception e) {
-                    log.error("Error sending chat: {}", e.getMessage());
-                }
+            this.sendWStoGroupChat(chat.get(),savedMessage, messageModel);
 
+        }
+    }
+    @Override
+    public void sendWStoGroupChat(Chat chat, Message message, MessageModel messageModel){
+        if (chat.getChatType().equals(ChatType.GROUP_CHAT)) {
+            log.info("sending WS group chat to {} with payload {}", chat.getGroupChatName(), messageModel);
+            try {
+                messagingTemplate.convertAndSend("/topic/chat/" + message.getChat().getChatId(), messageModel);
+            } catch (Exception e) {
+                log.error("Error sending chat: {}", e.getMessage());
             }
         }
     }

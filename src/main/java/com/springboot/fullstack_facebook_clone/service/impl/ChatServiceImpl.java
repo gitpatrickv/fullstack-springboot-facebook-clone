@@ -1,6 +1,7 @@
 package com.springboot.fullstack_facebook_clone.service.impl;
 
 import com.springboot.fullstack_facebook_clone.dto.model.ChatModel;
+import com.springboot.fullstack_facebook_clone.dto.model.MessageModel;
 import com.springboot.fullstack_facebook_clone.dto.model.UserDataModel;
 import com.springboot.fullstack_facebook_clone.dto.request.AddUserToGroupChatRequest;
 import com.springboot.fullstack_facebook_clone.dto.request.GroupChatNameRequest;
@@ -12,16 +13,20 @@ import com.springboot.fullstack_facebook_clone.entity.Chat;
 import com.springboot.fullstack_facebook_clone.entity.Message;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.entity.constants.ChatType;
+import com.springboot.fullstack_facebook_clone.entity.constants.LeaveReason;
 import com.springboot.fullstack_facebook_clone.repository.ChatRepository;
 import com.springboot.fullstack_facebook_clone.repository.MessageRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.ChatService;
+import com.springboot.fullstack_facebook_clone.service.MessageService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.ChatMapper;
+import com.springboot.fullstack_facebook_clone.utils.mapper.MessageMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +40,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
@@ -43,6 +49,8 @@ public class ChatServiceImpl implements ChatService {
     private final Pagination pagination;
     private final MessageRepository messageRepository;
     private final UserService userService;
+    private final MessageService messageService;
+    private final MessageMapper messageMapper;
 
     @Override
     public ChatIdResponse chatUser(Long userId, Long friendId) {
@@ -171,6 +179,10 @@ public class ChatServiceImpl implements ChatService {
         Chat chat = chatRepository.findById(chatId)
                 .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + chatId));
 
+        if(chat.getChatType() != ChatType.GROUP_CHAT) {
+            throw new IllegalStateException(StringUtil.NOT_GROUP_CHAT);
+        }
+
         if (request.getUserId() == null || request.getUserId().isEmpty()) {
             throw new IllegalArgumentException("User ID list cannot be null or empty");
         }
@@ -180,19 +192,47 @@ public class ChatServiceImpl implements ChatService {
                     .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + id));
             chat.getUsers().add(user);
             user.getChats().add(chat);
+            String text = "joined the chat";
 
-            String messageUpdate = user.getFirstName().substring(0, 1).toUpperCase() + user.getFirstName().substring(1).toLowerCase() + " " +
-                    user.getLastName().substring(0, 1).toUpperCase() + user.getLastName().substring(1).toLowerCase() +
-                    " joined the chat";
-
-            Message message = new Message();
-            message.setMessageUpdate(messageUpdate);
-            message.setTimestamp(LocalDateTime.now());
-            message.setChat(chat);
-            message.setSender(user);
-            messageRepository.save(message);
+            Message savedMessage = this.newMessage(text,chat,user);
+            MessageModel messageModel = messageMapper.mapEntityToModel(savedMessage);
+            messageService.sendWStoGroupChat(chat, savedMessage, messageModel);
         }
         chatRepository.save(chat);
+
+    }
+
+    @Override
+    public void leaveGroupChat(Long chatId, Long userId, LeaveReason leaveReason) {
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + chatId));
+
+        if(chat.getChatType() != ChatType.GROUP_CHAT) {
+            throw new IllegalStateException(StringUtil.NOT_GROUP_CHAT);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+
+        chat.getUsers().remove(user);
+        chatRepository.save(chat);
+        user.getChats().remove(chat);
+        userRepository.save(user);
+
+        String text = (LeaveReason.LEFT.equals(leaveReason)) ? "left the chat" : "was kicked from the chat";
+
+        Message savedMessage = this.newMessage(text,chat,user);
+        MessageModel messageModel = messageMapper.mapEntityToModel(savedMessage);
+        messageService.sendWStoGroupChat(chat, savedMessage, messageModel);
+    }
+
+    private Message newMessage(String text, Chat chat, User user){
+        Message message = new Message();
+        message.setMessageUpdate(text);
+        message.setTimestamp(LocalDateTime.now());
+        message.setChat(chat);
+        message.setSender(user);
+        return messageRepository.save(message);
     }
 
     private ChatModel mapChatToModel(Chat chat, Long userId) {

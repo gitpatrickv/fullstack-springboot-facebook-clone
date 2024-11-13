@@ -6,6 +6,7 @@ import com.springboot.fullstack_facebook_clone.dto.request.GroupChatNameRequest;
 import com.springboot.fullstack_facebook_clone.dto.request.GroupChatRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatIdResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.ChatResponse;
+import com.springboot.fullstack_facebook_clone.entity.constants.LeaveReason;
 import com.springboot.fullstack_facebook_clone.service.ChatService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +54,11 @@ public class ChatController {
     public void addUserToGroupChat(@PathVariable("chatId") Long chatId,
                                    @RequestBody @Valid AddUserToGroupChatRequest request){
         chatService.addUserToGroupChat(chatId, request);
+    }
+    @PostMapping("/group/leave/{chatId}/{userId}/{leaveReason}")
+    public void leaveGroupChat(@PathVariable("chatId") Long chatId,
+                               @PathVariable("userId") Long userId,
+                               @PathVariable("leaveReason") LeaveReason leaveReason) {
+        chatService.leaveGroupChat(chatId,userId, leaveReason);
     }
 }
