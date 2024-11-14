@@ -190,6 +190,11 @@ public class ChatServiceImpl implements ChatService {
         for(Long id : request.getUserId()){
             User user = userRepository.findById(id)
                     .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + id));
+
+            if(chat.getUsers().contains(user)){
+                throw new IllegalArgumentException("User is already a member of this chat group.");
+            }
+
             chat.getUsers().add(user);
             user.getChats().add(chat);
             String text = "joined the chat";
