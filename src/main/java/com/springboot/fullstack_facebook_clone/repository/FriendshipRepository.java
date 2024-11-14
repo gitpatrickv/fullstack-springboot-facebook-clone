@@ -1,6 +1,7 @@
 package com.springboot.fullstack_facebook_clone.repository;
 
 import com.springboot.fullstack_facebook_clone.entity.Friendship;
+import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.entity.constants.FriendshipStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,17 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     Page<Friendship> findAllByStatusAndFriends_UserId(FriendshipStatus status, Long userId, Pageable pageable);
     Page<Friendship> findAllByStatusAndUser_UserId(FriendshipStatus status, Long userId, Pageable pageable);
     Optional<Friendship> findByUser_UserIdAndFriends_UserId(Long userId, Long friendId);
-    @Query("SELECT COUNT(f) FROM Friendship f WHERE f.user.userId =:userId")
+    @Query("SELECT COUNT(f) FROM Friendship f WHERE f.user.userId =:userId AND f.status = 'FRIENDS'")
     Long getFriendListCount(@Param("userId") Long userId);
+
+    @Query("SELECT u FROM User u WHERE u.userId != :userId " +
+            "AND u.userId NOT IN (SELECT f.friends.userId FROM Friendship f WHERE f.user.userId = :userId) " +
+            "AND u.userId NOT IN (SELECT f.friends.userId FROM Friendship f WHERE f.user.userId = :userId AND f.status = 'PENDING') " +
+            "AND u.userId NOT IN (SELECT f.user.userId FROM Friendship f WHERE f.friends.userId = :userId AND f.status = 'PENDING')"
+        )
+    Page<User> findFriendSuggestions(@Param("userId") Long userId,
+                                     Pageable pageable);
+
+    void deleteByStatusAndUser_UserIdAndFriends_UserId(FriendshipStatus status, Long userId, Long friendId);
 
 }

@@ -12,7 +12,7 @@ public class PostResponse {
 
     private Long postId;
     private String content;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime postTimestamp;
     private Long userId;
     private String profilePicture;

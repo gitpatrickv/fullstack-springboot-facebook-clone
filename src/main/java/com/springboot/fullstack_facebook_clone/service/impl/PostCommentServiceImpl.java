@@ -12,6 +12,7 @@ import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.PostCommentService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
+import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class PostCommentServiceImpl implements PostCommentService {
     private final PostCommentRepository postCommentRepository;
     private final PostRepository postRepository;
     private final UserService userService;
+    private final Pagination pagination;
     @Override
     public void writePostComment(String email, Long postId, String comment, MultipartFile file) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
@@ -41,7 +43,7 @@ public class PostCommentServiceImpl implements PostCommentService {
         PostComment postComment = new PostComment();
         postComment.setComment(comment);
         if(file != null) {
-            postComment.setCommentImage(userService.processUserImage(user.getEmail(), file));
+            postComment.setCommentImage(userService.processImage(file));
         }
         postComment.setUser(user);
         postComment.setPost(post);
@@ -53,20 +55,12 @@ public class PostCommentServiceImpl implements PostCommentService {
     public PostCommentListResponse fetchAllPostComments(Long postId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<PostComment> postComments = postCommentRepository.findAllByPost_PostId(postId, pageable);
-        PageResponse pageResponse = this.getPagination(postComments);
+        PageResponse pageResponse = pagination.getPagination(postComments);
 
         List<PostCommentModel> postCommentModelList = new ArrayList<>();
 
         for(PostComment postComment : postComments){
-            PostCommentModel postCommentModel = new PostCommentModel();
-            postCommentModel.setPostCommentId(postComment.getPostCommentId());
-            postCommentModel.setComment(postComment.getComment());
-            postCommentModel.setCommentImage(postComment.getCommentImage());
-            postCommentModel.setFirstName(postComment.getUser().getFirstName());
-            postCommentModel.setLastName(postComment.getUser().getLastName());
-            postCommentModel.setProfilePicture(postComment.getUser().getProfilePicture());
-            postCommentModel.setTimestamp(postComment.getTimestamp());
-            postCommentModel.setUserId(postComment.getUser().getUserId());
+            PostCommentModel postCommentModel = this.getPostComment(postComment);
             postCommentModelList.add(postCommentModel);
         }
 
@@ -83,13 +77,28 @@ public class PostCommentServiceImpl implements PostCommentService {
         return countResponse;
     }
 
-    private PageResponse getPagination(Page<PostComment> postComments){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(postComments.getNumber());
-        pageResponse.setPageSize(postComments.getSize());
-        pageResponse.setTotalElements(postComments.getTotalElements());
-        pageResponse.setTotalPages(postComments.getTotalPages());
-        pageResponse.setLast(postComments.isLast());
-        return pageResponse;
+    @Override
+    public PostCommentModel getLastComment(Long postId) {
+        PageRequest pageRequest = PageRequest.of(0,1);
+        List<PostComment> postComments = postCommentRepository.findLastComment(postId,pageRequest);
+        return postComments.stream()
+                .findFirst()
+                .map(this::getPostComment)
+                .orElse(null);
     }
+
+    private PostCommentModel getPostComment(PostComment postComment){
+        PostCommentModel postCommentModel = new PostCommentModel();
+        postCommentModel.setPostCommentId(postComment.getPostCommentId());
+        postCommentModel.setComment(postComment.getComment());
+        postCommentModel.setCommentImage(postComment.getCommentImage());
+        postCommentModel.setFirstName(postComment.getUser().getFirstName());
+        postCommentModel.setLastName(postComment.getUser().getLastName());
+        postCommentModel.setProfilePicture(postComment.getUser().getProfilePicture());
+        postCommentModel.setTimestamp(postComment.getTimestamp());
+        postCommentModel.setUserId(postComment.getUser().getUserId());
+
+        return postCommentModel;
+    }
+
 }

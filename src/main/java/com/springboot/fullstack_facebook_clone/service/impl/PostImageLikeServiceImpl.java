@@ -12,6 +12,7 @@ import com.springboot.fullstack_facebook_clone.repository.PostImageLikesReposito
 import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.PostImageLikeService;
+import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class PostImageLikeServiceImpl implements PostImageLikeService {
     private final UserRepository userRepository;
     private final PostImageRepository postImageRepository;
     private final PostImageLikesRepository postImageLikesRepository;
+    private final Pagination pagination;
     @Transactional
     @Override
     public void likePostImage(String email, Long postImageId) {
@@ -77,7 +79,7 @@ public class PostImageLikeServiceImpl implements PostImageLikeService {
     public UserListResponse getPostImageLikeUserList(Long postImageId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<PostImageLikes> postImageLikes = postImageLikesRepository.findAllByPostImage_PostImageId(postImageId, pageable);
-        PageResponse pageResponse = this.getPagination(postImageLikes);
+        PageResponse pageResponse = pagination.getPagination(postImageLikes);
 
         List<UserDataModel> userDataModels = new ArrayList<>();
 
@@ -91,15 +93,5 @@ public class PostImageLikeServiceImpl implements PostImageLikeService {
             userDataModels.add(userDataModel);
         }
         return new UserListResponse(userDataModels,pageResponse);
-    }
-
-    private PageResponse getPagination(Page<PostImageLikes> postLikes){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(postLikes.getNumber());
-        pageResponse.setPageSize(postLikes.getSize());
-        pageResponse.setTotalElements(postLikes.getTotalElements());
-        pageResponse.setTotalPages(postLikes.getTotalPages());
-        pageResponse.setLast(postLikes.isLast());
-        return pageResponse;
     }
 }

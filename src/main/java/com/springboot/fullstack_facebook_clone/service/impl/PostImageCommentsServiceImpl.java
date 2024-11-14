@@ -12,6 +12,7 @@ import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.PostImageCommentsService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
+import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class PostImageCommentsServiceImpl implements PostImageCommentsService {
     private final PostImageCommentsRepository postImageCommentsRepository;
     private final PostImageRepository postImageRepository;
     private final UserService userService;
+    private final Pagination pagination;
     @Override
     public void writePostImageComment(String email, Long postImageId, String comment, MultipartFile file) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
@@ -41,7 +43,7 @@ public class PostImageCommentsServiceImpl implements PostImageCommentsService {
         PostImageComments postImageComments = new PostImageComments();
         postImageComments.setComment(comment);
         if(file != null) {
-            postImageComments.setCommentImage(userService.processUserImage(user.getEmail(), file));
+            postImageComments.setCommentImage(userService.processImage(file));
         }
         postImageComments.setUser(user);
         postImageComments.setPostImage(postImage);
@@ -53,7 +55,7 @@ public class PostImageCommentsServiceImpl implements PostImageCommentsService {
     public PostCommentListResponse fetchAllPostImageComments(Long postImageId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<PostImageComments> postImageComments = postImageCommentsRepository.findAllByPostImage_PostImageId(postImageId, pageable);
-        PageResponse pageResponse = this.getPagination(postImageComments);
+        PageResponse pageResponse = pagination.getPagination(postImageComments);
 
         List<PostCommentModel> postCommentModelList = new ArrayList<>();
 
@@ -82,15 +84,5 @@ public class PostImageCommentsServiceImpl implements PostImageCommentsService {
 
         return countResponse;
 
-    }
-
-    private PageResponse getPagination(Page<PostImageComments> postImageComments){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(postImageComments.getNumber());
-        pageResponse.setPageSize(postImageComments.getSize());
-        pageResponse.setTotalElements(postImageComments.getTotalElements());
-        pageResponse.setTotalPages(postImageComments.getTotalPages());
-        pageResponse.setLast(postImageComments.isLast());
-        return pageResponse;
     }
 }

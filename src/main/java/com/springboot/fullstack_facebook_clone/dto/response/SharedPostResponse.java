@@ -15,7 +15,7 @@ import java.util.List;
 public class SharedPostResponse {
     private Long postId;
     private String content;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
     private Long userId;
     private String firstName;

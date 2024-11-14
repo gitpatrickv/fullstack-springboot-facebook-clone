@@ -7,11 +7,13 @@ import com.springboot.fullstack_facebook_clone.entity.Friendship;
 import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.User;
+import com.springboot.fullstack_facebook_clone.entity.constants.FriendshipStatus;
 import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.service.PostService;
+import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.PostMapper;
 import com.springboot.fullstack_facebook_clone.utils.mapper.SharedPostMapper;
@@ -40,6 +42,7 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
     private final SharedPostMapper sharedPostMapper;
     private final PostImageRepository postImageRepository;
+    private final Pagination pagination;
     @Transactional
     @Override
     public void createPost(String email, Long userId, String content, MultipartFile[] files) {
@@ -69,7 +72,7 @@ public class PostServiceImpl implements PostService {
     public PostListResponse fetchAllUserPosts(Long userId, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
         Page<Post> posts = postRepository.findAllByUser_UserId(userId, pageable);
-        PageResponse pageResponse = this.getPagination(posts);
+        PageResponse pageResponse = pagination.getPagination(posts);
 
         List<PostModel> postModelList = new ArrayList<>();
 
@@ -93,12 +96,14 @@ public class PostServiceImpl implements PostService {
         List<Long> friendIds = new ArrayList<>();
 
         for(Friendship friendship : currentUser.getFriends()){
-            Long friendId = friendship.getFriends().getUserId();
-            friendIds.add(friendId);
+            if(friendship.getStatus().equals(FriendshipStatus.FRIENDS)) {
+                Long friendId = friendship.getFriends().getUserId();
+                friendIds.add(friendId);
+            }
         }
 
         Page<Post> posts = postRepository.findPostsByUserIdAndFriendId(userId, friendIds, pageable);
-        PageResponse pageResponse = this.getPagination(posts);
+        PageResponse pageResponse = pagination.getPagination(posts);
         List<PostModel> postModelList = new ArrayList<>();
 
         for(Post post : posts){
@@ -197,7 +202,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse findPostById(Long postId) {
+    public PostResponse findPostCreatorById(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_NOT_FOUND + postId));
 
         PostResponse postResponse = new PostResponse();
@@ -215,6 +220,19 @@ public class PostServiceImpl implements PostService {
         return postResponse;
     }
 
+    @Override
+    public PostModel getPostById(Long postId) {
+
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_NOT_FOUND + postId));
+
+        PostModel postModel = this.getPost(post, postMapper);
+        if(post.getSharedPost()!=null){
+            Post sharedPost = post.getSharedPost();
+            postModel.setSharedPost(this.getSharedPost(sharedPost));
+        }
+
+        return postModel;
+    }
     private PostModel getPost(Post post, PostMapper postMapper) {
         PostModel postModel = postMapper.mapEntityToModel(post);
         postModel.setUserId(post.getUser().getUserId());
@@ -233,15 +251,5 @@ public class PostServiceImpl implements PostService {
         sharedPostResponse.setProfilePicture(sharedPost.getUser().getProfilePicture());
 
         return sharedPostResponse;
-    }
-
-    private PageResponse getPagination(Page<Post> posts){
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(posts.getNumber());
-        pageResponse.setPageSize(posts.getSize());
-        pageResponse.setTotalElements(posts.getTotalElements());
-        pageResponse.setTotalPages(posts.getTotalPages());
-        pageResponse.setLast(posts.isLast());
-        return pageResponse;
     }
 }

@@ -4,6 +4,7 @@ import com.springboot.fullstack_facebook_clone.dto.model.UserModel;
 import com.springboot.fullstack_facebook_clone.dto.request.LoginRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.ErrorResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.LoginResponse;
+import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 import com.springboot.fullstack_facebook_clone.entity.constants.ImageType;
 import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
@@ -67,5 +68,11 @@ public class UserController {
     @GetMapping(path = "/image/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})
     public byte[] getUserPhoto(@PathVariable("filename") String filename) throws IOException {
         return postImageService.getImages(filename);
+    }
+    @GetMapping("/search")
+    public UserListResponse searchUser(@RequestParam (value = "keyword") String search,
+                                       @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                       @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
+        return userService.searchUser(search,pageNo,pageSize);
     }
 }

@@ -13,6 +13,6 @@ import java.time.LocalDateTime;
 public class PostImageModel {
     private Long postImageId;
     private String postImageUrl;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
 }

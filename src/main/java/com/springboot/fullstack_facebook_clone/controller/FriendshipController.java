@@ -63,5 +63,11 @@ public class FriendshipController {
     public CountResponse getFriendListCount(@PathVariable("userId") Long userId) {
         return friendshipService.getFriendListCount(userId);
     }
+    @GetMapping("/suggestions/{userId}")
+    public UserListResponse fetchAllFriendSuggestions(@PathVariable("userId") Long userid,
+                                                      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                                      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return friendshipService.fetchAllFriendSuggestions(userid,pageNo,pageSize);
+    }
 }
 

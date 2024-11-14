@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.controller;
 
+import com.springboot.fullstack_facebook_clone.dto.model.PostModel;
 import com.springboot.fullstack_facebook_clone.dto.request.SharePostRequest;
 import com.springboot.fullstack_facebook_clone.dto.response.PostListResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostResponse;
@@ -62,15 +63,19 @@ public class PostController {
         postService.deletePost(currentUser, postId);
     }
 
-    @GetMapping("/find/{postId}")
-    public PostResponse findPostById(@PathVariable("postId") Long postId) {
-        return postService.findPostById(postId);
+    @GetMapping("/find/creator/{postId}")
+    public PostResponse findPostCreatorById(@PathVariable("postId") Long postId) {
+        return postService.findPostCreatorById(postId);
     }
     @GetMapping("/get/all")
     public PostListResponse fetchAllPosts(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
                                          @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         String currentUser = userService.getAuthenticatedUser();
         return postService.fetchAllPosts(currentUser,pageNo,pageSize);
+    }
+    @GetMapping("/get/{postId}")
+    public PostModel getPostById(@PathVariable("postId") Long postId) {
+        return postService.getPostById(postId);
     }
 }
 
