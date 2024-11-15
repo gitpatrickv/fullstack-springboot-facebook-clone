@@ -34,7 +34,7 @@ A fully-featured Facebook clone that replicates the core functions of Facebook's
 
 
 - **Post Images Modal**
-![PostImages](https://github.com/user-attachments/assets/7b812463-926f-4e47-b9ed-3a36dabd58d6)
+![PostImages](https://github.com/user-attachments/assets/8422f71e-87c3-4ad6-861d-d83b719bcdbe)
 
 
 - **Login Page**

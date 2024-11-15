@@ -19,11 +19,11 @@ public class Friendship extends Timestamp{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long friendshipId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "friend_id")
     private User friends;
 
