@@ -2,17 +2,24 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-#    url: jdbc:mysql://facebook-clone-db:3306/facebook-db
-#    password: password
-    url: jdbc:mysql://localhost:3306/facebook-db
-    password: patrick
+#    password: patrick
+#    url: jdbc:mysql://localhost:3306/fbdb
+    url: jdbc:mysql://facebook-clone-db:3306/facebook-db
+    password: password
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
+  flyway:
+    enabled: true
+#    repair: true
+#    baseline-on-migrate: true
+#    baseline-description: "init"
+#    baseline-version: 0
+#    locations: classpath:db/migration
   servlet:
     multipart:
-      max-file-size: 1MB
-      max-request-size: 1MB
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 application:
   security:

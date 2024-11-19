@@ -30,11 +30,11 @@ A fully-featured Facebook clone that replicates the core functions of Facebook's
 
 
 - **Friends Page**
-![FriendsPage](https://github.com/user-attachments/assets/60f2bc56-3b44-40fc-80c8-59fb8116160b)
+![FriendsPage](https://github.com/user-attachments/assets/ea51bb74-7a85-4512-8175-6df5a01a4c6d)
 
 
 - **Post Images Modal**
-![PostImages](https://github.com/user-attachments/assets/7b812463-926f-4e47-b9ed-3a36dabd58d6)
+![PostImages](https://github.com/user-attachments/assets/8422f71e-87c3-4ad6-861d-d83b719bcdbe)
 
 
 - **Login Page**

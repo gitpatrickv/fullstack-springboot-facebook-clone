@@ -141,6 +141,7 @@ public class UserServiceImpl implements UserService {
                 PostImage postImage = new PostImage();
                 postImage.setPost(savedPost);
                 postImage.setPostImageUrl(processImage(file));
+                postImage.setTimestamp(LocalDateTime.now());
                 postImageRepository.save(postImage);
 
             }

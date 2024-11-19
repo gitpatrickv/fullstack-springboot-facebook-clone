@@ -68,7 +68,7 @@ public class User implements UserDetails {
     )
     private Set<Chat> chats = new HashSet<>();
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sender")
     private List<Message> messages = new ArrayList<>();
 
     @Override

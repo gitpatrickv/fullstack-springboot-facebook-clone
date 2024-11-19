@@ -32,7 +32,7 @@ public class Chat extends Timestamp{
     @ManyToMany(mappedBy = "chats")
     private Set<User> users = new HashSet<>();
 
-    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chat")
     private List<Message> messages = new ArrayList<>();
 
 }

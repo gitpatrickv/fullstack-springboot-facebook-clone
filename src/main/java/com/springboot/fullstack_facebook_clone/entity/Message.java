@@ -3,8 +3,6 @@ package com.springboot.fullstack_facebook_clone.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 @Builder
 @Getter
 @Setter
