@@ -13,13 +13,33 @@ services:
       - facebook-clone-network
   facebook-clone-api:
     container_name: facebook-clone
-    image: facebook-clone:latest
+    image: ${{ secrets.DOCKER_HUB_USERNAME }}/facebook-clone:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
     networks:
       - facebook-clone-network
     depends_on:
       - facebook-clone-db
+#    volumes:
+#      - ./images:/app/images
+
+  flyway:
+    image: flyway/flyway
+    container_name: facebook-clone-flyway
+    environment:
+      - FLYWAY_URL=jdbc:mysql://facebook-clone-db:3306/facebook-db
+      - FLYWAY_USER=root
+      - FLYWAY_PASSWORD=password
+    volumes:
+      - ./db/migrations:/flyway/sql
+    depends_on:
+      - facebook-clone-db
+    networks:
+      - facebook-clone-network
+
 volumes:
   facebook-clone-db:
 
