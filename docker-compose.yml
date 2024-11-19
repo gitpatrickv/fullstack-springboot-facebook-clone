@@ -13,7 +13,7 @@ services:
       - facebook-clone-network
   facebook-clone-api:
     container_name: facebook-clone
-    image: ${{ secrets.DOCKER_HUB_USERNAME }}/facebook-clone:latest
+    image: gitpatrickv/facebook-clone:latest
     build:
       context: .
       dockerfile: Dockerfile
