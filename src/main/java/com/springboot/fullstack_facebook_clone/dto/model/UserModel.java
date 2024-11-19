@@ -47,7 +47,7 @@ public class UserModel {
     private String confirmPassword;
 
     @NotNull(message = "{birth.date.required}")
-    @JsonFormat(pattern = "yyyy-MMM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
     private String profilePicture;
     private String coverPhoto;

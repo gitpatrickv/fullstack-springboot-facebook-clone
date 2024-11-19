@@ -3,24 +3,23 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: patrick
-    url: jdbc:mysql://localhost:3306/fbclone_flyway_db
+    url: jdbc:mysql://localhost:3306/fbdb
 #    url: jdbc:mysql://facebook-clone-db:3306/facebook-db
 #    password: password
   jpa:
-    show-sql: true
     hibernate:
       ddl-auto: validate
   flyway:
     enabled: true
-    repair: true
+#    repair: true
 #    baseline-on-migrate: true
 #    baseline-description: "init"
 #    baseline-version: 0
 #    locations: classpath:db/migration
   servlet:
     multipart:
-      max-file-size: 1MB
-      max-request-size: 1MB
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 application:
   security:

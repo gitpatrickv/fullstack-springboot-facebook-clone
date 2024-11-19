@@ -29,26 +29,12 @@ CREATE TABLE IF NOT EXISTS post_images (
     `timestamp` TIMESTAMP
 );
 
-ALTER TABLE posts
-ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users(user_id),
-ADD CONSTRAINT fk_shared_image_id FOREIGN KEY (shared_image_id) REFERENCES post_images(post_image_id) ON DELETE CASCADE,
-ADD CONSTRAINT fk_shared_post_id FOREIGN KEY (shared_post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
-ADD CONSTRAINT fk_guest_poster_id FOREIGN KEY (guest_poster_id) REFERENCES users(user_id);
-
-ALTER TABLE post_images
-ADD CONSTRAINT fk_post_id FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE;
-
 CREATE TABLE IF NOT EXISTS post_likes (
     `post_like_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `post_id` BIGINT NOT NULL,
     `user_id` BIGINT NOT NULL,
     `timestamp` TIMESTAMP
 );
-
-ALTER TABLE post_likes
-ADD CONSTRAINT fk_post_likes_post_id FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
-ADD CONSTRAINT fk_post_likes_user_id FOREIGN KEY (user_id) REFERENCES users(user_id);
-
 
 CREATE TABLE IF NOT EXISTS post_comment (
     `post_comment_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -58,10 +44,6 @@ CREATE TABLE IF NOT EXISTS post_comment (
     `comment_image` VARCHAR(255) DEFAULT NULL,
     `timestamp` TIMESTAMP
 );
-
-ALTER TABLE post_comment
-ADD CONSTRAINT fk_post_comment_post_id FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
-ADD CONSTRAINT fk_post_comment_user_id FOREIGN KEY (user_id) REFERENCES users(user_id);
 
 CREATE TABLE IF NOT EXISTS notifications (
     `notification_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -74,21 +56,12 @@ CREATE TABLE IF NOT EXISTS notifications (
     `timestamp` TIMESTAMP
 );
 
-ALTER TABLE notifications
-ADD CONSTRAINT fk_notifications_receiver_id FOREIGN KEY (receiver_id) REFERENCES users(user_id),
-ADD CONSTRAINT fk_notifications_sender_id FOREIGN KEY (sender_id) REFERENCES users(user_id),
-ADD CONSTRAINT fk_notifications_post_id FOREIGN KEY (post_id) REFERENCES posts(post_id);
-
 CREATE TABLE IF NOT EXISTS post_images_likes (
     `post_image_like_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `post_image_id` BIGINT NOT NULL,
     `user_id` BIGINT NOT NULL,
     `timestamp` TIMESTAMP
 );
-
-ALTER TABLE post_images_likes
-ADD CONSTRAINT fk_post_images_likes_post_image_id FOREIGN KEY (post_image_id) references post_images(post_image_id) ON DELETE CASCADE,
-ADD CONSTRAINT fk_post_images_likes_user_id FOREIGN KEY (user_id) REFERENCES users(user_id);
 
 CREATE TABLE IF NOT EXISTS post_image_comments (
     `post_image_comment_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -99,10 +72,6 @@ CREATE TABLE IF NOT EXISTS post_image_comments (
     `timestamp` TIMESTAMP
 );
 
-ALTER TABLE post_image_comments
-ADD CONSTRAINT fk_post_image_comments_post_image_id FOREIGN KEY (post_image_id) references post_images(post_image_id) ON DELETE CASCADE,
-ADD CONSTRAINT fk_post_image_comments_user_id FOREIGN KEY (user_id) REFERENCES users(user_id);
-
 CREATE TABLE IF NOT EXISTS friendship (
     `friendship_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `user_id` BIGINT NOT NULL,
@@ -110,10 +79,6 @@ CREATE TABLE IF NOT EXISTS friendship (
     `status` ENUM('PENDING', 'FRIENDS'),
     `timestamp` TIMESTAMP
 );
-
-ALTER TABLE friendship
-ADD CONSTRAINT fk_friendship_user_id FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
-ADD CONSTRAINT fk_friendship_friend_id FOREIGN KEY (friend_id) REFERENCES users(user_id) ON DELETE CASCADE;
 
 CREATE TABLE IF NOT EXISTS chat (
     `chat_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -129,10 +94,6 @@ CREATE TABLE IF NOT EXISTS chat_user (
     PRIMARY KEY (user_id, chat_id)
 );
 
-ALTER TABLE chat_user
-ADD CONSTRAINT fk_chat_user_user_id FOREIGN KEY (user_id) REFERENCES users(user_id),
-ADD CONSTRAINT fk_chat_user_chat_id FOREIGN KEY (chat_id) REFERENCES chat(chat_id);
-
 CREATE TABLE IF NOT EXISTS message (
     `message_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
     `chat_id` BIGINT NOT NULL,
@@ -141,7 +102,3 @@ CREATE TABLE IF NOT EXISTS message (
     `message_update` VARCHAR(255) DEFAULT NULL,
     `timestamp` TIMESTAMP
 );
-
-ALTER TABLE message
-ADD CONSTRAINT fk_message_chat_id FOREIGN KEY (chat_id) REFERENCES chat(chat_id),
-ADD CONSTRAINT fk_message_user_id FOREIGN KEY (sender_id) REFERENCES users(user_id);
