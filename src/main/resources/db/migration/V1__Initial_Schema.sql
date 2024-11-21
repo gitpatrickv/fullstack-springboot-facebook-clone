@@ -102,3 +102,11 @@ CREATE TABLE IF NOT EXISTS message (
     `message_update` VARCHAR(255) DEFAULT NULL,
     `timestamp` TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS story (
+    `story_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` BIGINT NOT NULL,
+    `text` VARCHAR(255) DEFAULT NULL,
+    `story_image` VARCHAR(255) DEFAULT NULL,
+    `timestamp` TIMESTAMP
+);

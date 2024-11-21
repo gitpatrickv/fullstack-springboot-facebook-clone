@@ -59,6 +59,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
     private List<Notification> notifications = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Story> stories = new ArrayList<>();
+
     @ManyToMany
     @JoinTable(
             name = "chat_user",

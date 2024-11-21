@@ -39,3 +39,6 @@ ADD CONSTRAINT fk_chat_user_chat_id FOREIGN KEY (chat_id) REFERENCES chat(chat_i
 ALTER TABLE message
 ADD CONSTRAINT fk_message_chat_id FOREIGN KEY (chat_id) REFERENCES chat(chat_id),
 ADD CONSTRAINT fk_message_user_id FOREIGN KEY (sender_id) REFERENCES users(user_id);
+
+ALTER TABLE story
+ADD CONSTRAINT fk_story_user_id FOREIGN KEY (user_id) REFERENCES users(user_id);
