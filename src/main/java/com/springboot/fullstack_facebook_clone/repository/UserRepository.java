@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,4 +20,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE LOWER(u.firstName) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<User> searchUser(@Param("search") String search, Pageable pageable);
+    @Query("SELECT u FROM User u WHERE u.userId IN :userIds")
+    List<User> findUsersById(@Param("userIds") List<Long> userIds);
 }
