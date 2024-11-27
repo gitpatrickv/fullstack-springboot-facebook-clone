@@ -89,4 +89,9 @@ public class StoryServiceImpl implements StoryService {
 
         return storyListResponses;
     }
+
+    @Override
+    public void deleteStory(Long storyId) {
+        storyRepository.deleteById(storyId);
+    }
 }

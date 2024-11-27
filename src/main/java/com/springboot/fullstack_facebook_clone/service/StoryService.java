@@ -9,4 +9,5 @@ public interface StoryService {
 
     void createStory(Long userId, String text, MultipartFile file);
     List<StoryListResponse> fetchAllStories(Long userId);
+    void deleteStory(Long storyId);
 }

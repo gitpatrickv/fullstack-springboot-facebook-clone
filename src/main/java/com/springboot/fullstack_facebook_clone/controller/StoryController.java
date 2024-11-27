@@ -24,4 +24,8 @@ public class StoryController {
     public List<StoryListResponse> fetchAllStories(@PathVariable("userId")Long userId){
         return storyService.fetchAllStories(userId);
     }
+    @DeleteMapping("/delete/{storyId}")
+    public void deleteStory(@PathVariable("storyId") Long storyId) {
+        storyService.deleteStory(storyId);
+    }
 }

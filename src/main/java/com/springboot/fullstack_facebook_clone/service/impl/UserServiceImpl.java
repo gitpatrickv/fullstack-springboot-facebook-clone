@@ -64,7 +64,6 @@ public class UserServiceImpl implements UserService {
             return LoginResponse.builder()
                     .jwtToken(jwtService.generateToken(authentication))
                     .role(authentication.getAuthorities().iterator().next().getAuthority())
-                    .currentUser(authentication.getName())
                     .build();
         } catch (AuthenticationException e) {
             throw new BadCredentialsException(StringUtil.INVALID_CREDENTIALS);
@@ -91,7 +90,6 @@ public class UserServiceImpl implements UserService {
             return LoginResponse.builder()
                     .jwtToken(jwtService.generateToken(authentication))
                     .role(authentication.getAuthorities().iterator().next().getAuthority())
-                    .currentUser(authentication.getName())
                     .build();
         } catch (AuthenticationException e) {
             throw new BadCredentialsException(StringUtil.INVALID_CREDENTIALS);
