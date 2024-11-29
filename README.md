@@ -49,7 +49,7 @@ A fully-featured Facebook clone that replicates the core functions of Facebook's
 
 ## Entity Relationship Diagram
 
-![ERD FB_CLONE](https://github.com/user-attachments/assets/8c4a280a-bfd4-4109-b1cb-9f7b898205df)
+![ERD FB_CLONE](https://github.com/user-attachments/assets/3a099de0-f217-4b09-a33c-5564eae7eb14)
 
 ## Screenshots
 - **Home Page**
