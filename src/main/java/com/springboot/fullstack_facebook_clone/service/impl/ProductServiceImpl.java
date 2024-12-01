@@ -54,14 +54,24 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
         Page<Product> products = productRepository.findAll(pageable);
         PageResponse pageResponse = pagination.getPagination(products);
+        return this.getProducts(products,productMapper,pageResponse);
+    }
 
+    @Override
+    public ProductResponse fetchAllProductsByCategory(String category, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
+        Page<Product> products = productRepository.findProductsByCategory(category, pageable);
+        PageResponse pageResponse = pagination.getPagination(products);
+        return this.getProducts(products,productMapper,pageResponse);
+    }
+
+    private ProductResponse getProducts(Page<Product> products, ProductMapper productMapper, PageResponse pageResponse) {
         List<ProductModel> productModels = new ArrayList<>();
 
-        for(Product product : products){
+        for (Product product : products) {
             ProductModel productModel = productMapper.mapEntityToModel(product);
             productModels.add(productModel);
         }
-
         return new ProductResponse(productModels, pageResponse);
     }
 }

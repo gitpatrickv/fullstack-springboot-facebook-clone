@@ -20,13 +20,19 @@ public class ProductController {
     @ResponseStatus(HttpStatus.CREATED)
     public void saveProduct(@PathVariable("userId") Long userId,
                             @RequestPart("product") @Valid ProductModel productModel,
-                            @RequestPart("files") MultipartFile[] files){
-        productService.saveProduct(userId,productModel,files);
+                            @RequestPart("file") MultipartFile[] files){
+        productService.saveProduct(userId, productModel, files);
     }
 
     @GetMapping
     public ProductResponse fetchAllProducts(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
                                             @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         return productService.fetchAllProducts(pageNo, pageSize);
+    }
+    @GetMapping("/{category}")
+    public ProductResponse fetchAllProductsByCategory(@PathVariable("category") String category,
+                                                      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                                      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
+        return productService.fetchAllProductsByCategory(category, pageNo, pageSize);
     }
 }

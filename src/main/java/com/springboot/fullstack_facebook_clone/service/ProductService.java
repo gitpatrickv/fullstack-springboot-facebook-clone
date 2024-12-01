@@ -8,4 +8,5 @@ public interface ProductService {
 
     void saveProduct(Long userId, ProductModel productModel,  MultipartFile[] files);
     ProductResponse fetchAllProducts(int pageNo, int pageSize);
+    ProductResponse fetchAllProductsByCategory(String category, int pageNo, int pageSize);
 }

@@ -43,6 +43,7 @@ public class SecurityConfig {
                                         .requestMatchers("/api/friends/**").hasAuthority(USER.name())
                                         .requestMatchers("/api/notifications/**").hasAuthority(USER.name())
                                         .requestMatchers("/api/chat/**").hasAuthority(USER.name())
+                                        .requestMatchers("/api/product/**").hasAuthority(USER.name())
                                         .anyRequest().authenticated()
                 );
         httpSecurity.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
