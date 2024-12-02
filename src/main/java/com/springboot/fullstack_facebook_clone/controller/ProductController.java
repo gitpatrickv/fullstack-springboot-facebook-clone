@@ -35,4 +35,16 @@ public class ProductController {
                                                       @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
         return productService.fetchAllProductsByCategory(category, pageNo, pageSize);
     }
+
+    @GetMapping("/user/{userId}")
+    public ProductResponse fetchAllUserListedProducts(@PathVariable("userId") Long userId,
+                                                      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                                      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return productService.fetchAllUserListedProducts(userId, pageNo, pageSize);
+    }
+
+    @GetMapping("/find/{productId}")
+    public ProductModel findProductById(@PathVariable("productId") Long productId){
+        return productService.findProductById(productId);
+    }
 }

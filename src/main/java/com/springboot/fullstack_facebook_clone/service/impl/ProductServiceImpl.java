@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -63,6 +64,20 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> products = productRepository.findProductsByCategory(category, pageable);
         PageResponse pageResponse = pagination.getPagination(products);
         return this.getProducts(products,productMapper,pageResponse);
+    }
+
+    @Override
+    public ProductResponse fetchAllUserListedProducts(Long userId, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
+        Page<Product> products = productRepository.findAllByUser_UserId(userId, pageable);
+        PageResponse pageResponse = pagination.getPagination(products);
+        return this.getProducts(products,productMapper,pageResponse);
+    }
+
+    @Override
+    public ProductModel findProductById(Long productId) {
+        Optional<Product> product = productRepository.findById(productId);
+        return product.map(productMapper::mapEntityToModel).orElse(null);
     }
 
     private ProductResponse getProducts(Page<Product> products, ProductMapper productMapper, PageResponse pageResponse) {

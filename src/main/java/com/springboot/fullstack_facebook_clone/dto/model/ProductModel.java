@@ -1,5 +1,6 @@
 package com.springboot.fullstack_facebook_clone.dto.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.springboot.fullstack_facebook_clone.entity.constants.Availability;
 import com.springboot.fullstack_facebook_clone.entity.constants.Category;
@@ -9,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,8 @@ public class ProductModel {
     private Double price;
     private String brand;
     private String description;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime timestamp;
     private List<ProductImageModel> productImages = new ArrayList<>();
     private UserDataModel user;
 
