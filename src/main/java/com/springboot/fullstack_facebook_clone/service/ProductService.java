@@ -10,5 +10,6 @@ public interface ProductService {
     ProductResponse fetchAllProducts(int pageNo, int pageSize);
     ProductResponse fetchAllProductsByCategory(String category, int pageNo, int pageSize);
     ProductResponse fetchAllUserListedProducts(Long userId, int pageNo, int pageSize);
+    ProductResponse searchItem(String search, int pageNo, int pageSize);
     ProductModel findProductById(Long productId);
 }

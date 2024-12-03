@@ -75,6 +75,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ProductResponse searchItem(String search, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Product> products = productRepository.searchItem(search, pageable);
+        PageResponse pageResponse = pagination.getPagination(products);
+        return this.getProducts(products,productMapper,pageResponse);
+    }
+
+    @Override
     public ProductModel findProductById(Long productId) {
         Optional<Product> product = productRepository.findById(productId);
         return product.map(productMapper::mapEntityToModel).orElse(null);

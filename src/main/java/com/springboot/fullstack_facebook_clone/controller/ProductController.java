@@ -42,6 +42,12 @@ public class ProductController {
                                                       @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
         return productService.fetchAllUserListedProducts(userId, pageNo, pageSize);
     }
+    @GetMapping("/search")
+    public ProductResponse searchItem(@RequestParam(value = "keyword") String search,
+                                      @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                      @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return productService.searchItem(search, pageNo, pageSize);
+    }
 
     @GetMapping("/find/{productId}")
     public ProductModel findProductById(@PathVariable("productId") Long productId){
