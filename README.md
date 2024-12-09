@@ -1,7 +1,25 @@
 # Facebook Clone
 
-## Project Status
+---
 
+### Demo Video
+[Watch the Demo Video](https://youtu.be/pnD32jIq0Us)
+### Sample Screenshots
+- **Home Page**
+  ![HomePage](https://github.com/user-attachments/assets/fd32ea52-f35b-48c2-b42c-790ded42ac28)
+
+- **Profile Page**
+  ![ProfilePage](https://github.com/user-attachments/assets/82cb6e0f-ceed-4e35-a257-59c663361964)
+
+## Table of Contents
+- [Project Status](#project-status)
+- [Project Overview](#project-overview)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Entity Relationship Diagram](#entity-relationship-diagram)
+- [License](#license)
+
+## Project Status
 This project is a work in progress!
 More features are being added.
 
@@ -46,29 +64,12 @@ A fully-featured Facebook clone that replicates the core functions of Facebook's
 
 4. Open your browser and visit `http://localhost:5173` to access the application.
 
-
 ## Entity Relationship Diagram
 
 ![ERD FB_CLONE](https://github.com/user-attachments/assets/3a099de0-f217-4b09-a33c-5564eae7eb14)
 
-## Screenshots
-- **Home Page**
-![HomePage](https://github.com/user-attachments/assets/fd32ea52-f35b-48c2-b42c-790ded42ac28)
+## License
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for more details.
 
-
-- **Profile Page**
-![ProfilePage](https://github.com/user-attachments/assets/82cb6e0f-ceed-4e35-a257-59c663361964)
-
-
-- **Friends Page**
-![FriendsPage](https://github.com/user-attachments/assets/ea51bb74-7a85-4512-8175-6df5a01a4c6d)
-
-
-- **Post Images Modal**
-![PostImages](https://github.com/user-attachments/assets/8422f71e-87c3-4ad6-861d-d83b719bcdbe)
-
-
-- **Login Page**
-![LoginPage](https://github.com/user-attachments/assets/6f732ba8-8d83-41f3-8722-644a9df85d1c)
 
 
