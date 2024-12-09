@@ -102,3 +102,30 @@ CREATE TABLE IF NOT EXISTS message (
     `message_update` VARCHAR(255) DEFAULT NULL,
     `timestamp` TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS story (
+    `story_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` BIGINT NOT NULL,
+    `text` VARCHAR(255) DEFAULT NULL,
+    `story_image` VARCHAR(255) DEFAULT NULL,
+    `timestamp` TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS products (
+    `product_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` BIGINT NOT NULL,
+    `category` ENUM('VEHICLES', 'ELECTRONICS', 'APPAREL', 'TOYS_AND_GAMES', 'HOME_SALES', 'ENTERTAINMENT', 'SPORTS', 'OFFICE_SUPPLIES', 'MUSICAL_INSTRUMENTS') NOT NULL,
+    `product_condition` ENUM('NEW', 'GOOD', 'FAIR') NOT NULL,
+    `availability` ENUM('SINGLE', 'IN_STOCK') NOT NULL,
+    `product_name` VARCHAR(100) NOT NULL,
+    `price` DOUBLE NOT NULL,
+    `brand` VARCHAR(50) DEFAULT NULL,
+    `description` VARCHAR(255) DEFAULT NULL,
+    `timestamp` TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS product_images (
+    `product_image_id` BIGINT AUTO_INCREMENT PRIMARY KEY,
+    `product_id` BIGINT NOT NULL,
+    `product_image` VARCHAR(255) DEFAULT NULL
+);
