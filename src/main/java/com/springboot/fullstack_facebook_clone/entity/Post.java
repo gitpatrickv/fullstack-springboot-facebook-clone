@@ -30,11 +30,11 @@ public class Post extends Timestamp{
     @JoinColumn(name = "guest_poster_id")
     private User guestPoster;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "shared_post_id")
     private Post sharedPost;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "shared_image_id")
     private PostImage sharedImage;
 
