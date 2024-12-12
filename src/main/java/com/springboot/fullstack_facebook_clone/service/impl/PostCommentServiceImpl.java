@@ -8,12 +8,10 @@ import com.springboot.fullstack_facebook_clone.entity.Post;
 import com.springboot.fullstack_facebook_clone.entity.PostComment;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.repository.PostCommentRepository;
-import com.springboot.fullstack_facebook_clone.repository.PostRepository;
-import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.PostCommentService;
+import com.springboot.fullstack_facebook_clone.service.PostService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
-import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,21 +22,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @Service
 public class PostCommentServiceImpl implements PostCommentService {
 
-    private final UserRepository userRepository;
     private final PostCommentRepository postCommentRepository;
-    private final PostRepository postRepository;
     private final UserService userService;
     private final Pagination pagination;
+    private final PostService postService;
     @Override
-    public void writePostComment(String email, Long postId, String comment, MultipartFile file) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_NOT_FOUND + postId));
+    public void writePostComment(Long postId, String comment, MultipartFile file) {
+        User user = userService.getCurrentAuthenticatedUser();
+        Post post = postService.getPost(postId);
 
         PostComment postComment = new PostComment();
         postComment.setComment(comment);

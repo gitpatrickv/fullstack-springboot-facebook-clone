@@ -4,7 +4,6 @@ import com.springboot.fullstack_facebook_clone.dto.response.CountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.FriendshipStatusResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 import com.springboot.fullstack_facebook_clone.service.FriendshipService;
-import com.springboot.fullstack_facebook_clone.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -16,16 +15,14 @@ import org.springframework.web.bind.annotation.*;
 public class FriendshipController {
 
     private final FriendshipService friendshipService;
-    private final UserService userService;
+
     @PostMapping("/add/{strangerUserId}")
     public void addToFriend(@PathVariable("strangerUserId") Long strangerUserId) {
-        String currentUser = userService.getAuthenticatedUser();
-        friendshipService.addToFriend(currentUser, strangerUserId);
+        friendshipService.addToFriend(strangerUserId);
     }
     @PostMapping("/accept/{strangerUserId}")
     public void acceptFriendRequest(@PathVariable("strangerUserId") Long strangerUserId) {
-        String currentUser = userService.getAuthenticatedUser();
-        friendshipService.acceptFriendRequest(currentUser,strangerUserId);
+        friendshipService.acceptFriendRequest(strangerUserId);
     }
 
     @GetMapping("/request/list/{userId}")
@@ -42,14 +39,12 @@ public class FriendshipController {
     }
     @GetMapping("/status/{friendId}")
     public FriendshipStatusResponse getFriendshipStatus(@PathVariable("friendId") Long friendId) {
-        String currentUser = userService.getAuthenticatedUser();
-        return friendshipService.getFriendshipStatus(currentUser,friendId, true);
+        return friendshipService.getFriendshipStatus(friendId, true);
     }
 
     @GetMapping("/status/request/{friendId}")
     public FriendshipStatusResponse getFriendRequestStatus(@PathVariable("friendId") Long friendId) {
-        String currentUser = userService.getAuthenticatedUser();
-        return friendshipService.getFriendshipStatus(currentUser,friendId, false);
+        return friendshipService.getFriendshipStatus(friendId, false);
     }
     @DeleteMapping("/unfriend/{userId}/{friendId}")
     public void unfriend(@PathVariable("userId") Long userId, @PathVariable("friendId") Long friendId) {

@@ -53,17 +53,15 @@ public class ChatServiceImpl implements ChatService {
     private final MessageMapper messageMapper;
 
     @Override
-    public ChatIdResponse chatUser(Long userId, Long friendId) {
-        Optional<Chat> optionalChat = chatRepository.findExistingChat(userId,friendId,ChatType.PRIVATE_CHAT);
+    public ChatIdResponse chatUser(Long friendId) {
+        User user = userService.getCurrentAuthenticatedUser();
+        Optional<Chat> optionalChat = chatRepository.findExistingChat(user.getUserId(),friendId,ChatType.PRIVATE_CHAT);
         Chat chat;
 
         if(optionalChat.isPresent()){
             chat = optionalChat.get();
         } else {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
-            User friend = userRepository.findById(friendId)
-                    .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + friendId));
+            User friend = userService.getUserByUserId(friendId);
 
             Set<User> users = new HashSet<>(Arrays.asList(user,friend));
 
@@ -97,15 +95,13 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public ChatModel findChatById(Long chatId, Long userId) {
-        Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + chatId));
+        Chat chat = this.getChat(chatId);
         return this.mapChatToModel(chat, userId);
     }
 
     @Override
-    public ChatIdResponse createGroupChat(Long userId, GroupChatRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+    public ChatIdResponse createGroupChat(GroupChatRequest request) {
+        User user = userService.getCurrentAuthenticatedUser();
 
         request.getFriendId().add(user.getUserId());
 
@@ -144,8 +140,7 @@ public class ChatServiceImpl implements ChatService {
             throw new IllegalArgumentException("File cannot be null");
         }
 
-        Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + chatId));
+        Chat chat = this.getChat(chatId);
 
         if(chat.getChatType() != ChatType.GROUP_CHAT) {
             throw new IllegalStateException(StringUtil.NOT_GROUP_CHAT);
@@ -163,8 +158,7 @@ public class ChatServiceImpl implements ChatService {
             throw new IllegalArgumentException("name cannot be null");
         }
 
-        Chat chat = chatRepository.findById(request.getChatId())
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + request.getChatId()));
+        Chat chat = this.getChat(request.getChatId());
 
         if(chat.getChatType() != ChatType.GROUP_CHAT) {
             throw new IllegalStateException(StringUtil.NOT_GROUP_CHAT);
@@ -176,8 +170,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void addUserToGroupChat(Long chatId, AddUserToGroupChatRequest request) {
-        Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + chatId));
+        Chat chat = this.getChat(chatId);
 
         if(chat.getChatType() != ChatType.GROUP_CHAT) {
             throw new IllegalStateException(StringUtil.NOT_GROUP_CHAT);
@@ -188,8 +181,7 @@ public class ChatServiceImpl implements ChatService {
         }
 
         for(Long id : request.getUserId()){
-            User user = userRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + id));
+            User user = userService.getUserByUserId(id);
 
             if(chat.getUsers().contains(user)){
                 throw new IllegalArgumentException("User is already a member of this chat group.");
@@ -209,15 +201,13 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public void leaveGroupChat(Long chatId, Long userId, LeaveReason leaveReason) {
-        Chat chat = chatRepository.findById(chatId)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.CHAT_NOT_FOUND + chatId));
+        Chat chat = this.getChat(chatId);
 
         if(chat.getChatType() != ChatType.GROUP_CHAT) {
             throw new IllegalStateException(StringUtil.NOT_GROUP_CHAT);
         }
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+        User user = userService.getUserByUserId(userId);
 
         chat.getUsers().remove(user);
         chatRepository.save(chat);
@@ -229,6 +219,12 @@ public class ChatServiceImpl implements ChatService {
         Message savedMessage = this.newMessage(text,chat,user);
         MessageModel messageModel = messageMapper.mapEntityToModel(savedMessage);
         messageService.sendWStoGroupChat(chat, savedMessage, messageModel);
+    }
+
+    @Override
+    public Chat getChat(Long chatId) {
+        return chatRepository.findById(chatId)
+                .orElseThrow(() -> new NoSuchElementException("Chat not found with ID: " + chatId));
     }
 
     private Message newMessage(String text, Chat chat, User user){

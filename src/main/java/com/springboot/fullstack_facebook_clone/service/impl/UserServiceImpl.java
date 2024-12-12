@@ -40,7 +40,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
@@ -97,31 +96,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String getAuthenticatedUser() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+    public User getUserByUserId(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND));
     }
 
     @Override
-    public UserModel getCurrentUserInfo(String email) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+    public User getCurrentAuthenticatedUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND));
+    }
 
+    @Override
+    public UserModel getCurrentUserInfo() {
+        User user = this.getCurrentAuthenticatedUser();
         return mapper.mapUserEntityToUserModel(user);
     }
 
     @Override
     public UserModel getUserProfileInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
-
+        User user = this.getUserByUserId(userId);
         return mapper.mapUserEntityToUserModel(user);
     }
 
     @Override
-    public void uploadUserImage(String email, MultipartFile file, ImageType imageType, String description) {
-        Optional<User> optionalUser = userRepository.findByEmail(email);
-
-        if(optionalUser.isPresent()){
-            User user = optionalUser.get();
-
+    public void uploadUserImage(MultipartFile file, ImageType imageType, String description) {
+            User user = this.getCurrentAuthenticatedUser();
             if(file != null) {
                 if (imageType.equals(ImageType.PROFILE_PICTURE)) {
                     user.setProfilePicture(processImage(file));
@@ -141,8 +142,6 @@ public class UserServiceImpl implements UserService {
                 postImage.setPostImageUrl(processImage(file));
                 postImage.setTimestamp(LocalDateTime.now());
                 postImageRepository.save(postImage);
-
-            }
         }
     }
 

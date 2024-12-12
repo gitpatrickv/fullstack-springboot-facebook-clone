@@ -10,10 +10,9 @@ import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.entity.constants.ChatType;
 import com.springboot.fullstack_facebook_clone.repository.ChatRepository;
 import com.springboot.fullstack_facebook_clone.repository.MessageRepository;
-import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.MessageService;
+import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
-import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.MessageMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -35,16 +33,15 @@ import java.util.Optional;
 public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
-    private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final Pagination pagination;
     private final MessageMapper messageMapper;
+    private final UserService userService;
 
     @Override
-    public void sendMessage(String email, SendMessageRequest request) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+    public void sendMessage(SendMessageRequest request) {
+        User user = userService.getCurrentAuthenticatedUser();
         Optional<Chat> chat = chatRepository.findById(request.getChatId());
 
         if(chat.isPresent()) {

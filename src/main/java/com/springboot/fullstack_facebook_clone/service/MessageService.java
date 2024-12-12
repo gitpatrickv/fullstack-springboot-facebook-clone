@@ -8,7 +8,7 @@ import com.springboot.fullstack_facebook_clone.entity.Message;
 
 public interface MessageService {
 
-    void sendMessage(String email, SendMessageRequest request);
+    void sendMessage(SendMessageRequest request);
     MessageResponse fetchAllChatMessages (Long chatId, int pageNo, int pageSize);
     MessageModel getLastMessage(Long chatId);
     public void sendWStoGroupChat(Chat chat, Message message, MessageModel messageModel);

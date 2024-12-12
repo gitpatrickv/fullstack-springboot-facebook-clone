@@ -48,9 +48,8 @@ public class FriendshipServiceImpl implements FriendshipService {
     private final NotificationService notificationService;
 
     @Override
-    public void addToFriend(String currentUser, Long strangerUserId) {
-        User user = userRepository.findByEmail(currentUser)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
+    public void addToFriend(Long strangerUserId) {
+        User user = userService.getCurrentAuthenticatedUser();
         Optional<Friendship> friendRequest = friendshipRepository.findByFriendship(user.getUserId(), strangerUserId, FriendshipStatus.PENDING);
         Optional<Friendship> friendRequestFromOtherUser = friendshipRepository.findByFriendship(strangerUserId, user.getUserId(), FriendshipStatus.PENDING);
         if(user.getUserId().equals(strangerUserId)){
@@ -94,11 +93,9 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public void acceptFriendRequest(String currentUser, Long strangerUserId) {
-        User user = userRepository.findByEmail(currentUser)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
-        User stranger = userRepository.findById(strangerUserId)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + strangerUserId));
+    public void acceptFriendRequest(Long strangerUserId) {
+        User user = userService.getCurrentAuthenticatedUser();
+        User stranger = userService.getUserByUserId(strangerUserId);
 
         Optional<Friendship> friendRequest = friendshipRepository.findByFriendship(strangerUserId, user.getUserId(), FriendshipStatus.PENDING);
 
@@ -165,9 +162,8 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public FriendshipStatusResponse getFriendshipStatus(String currentUser, Long friendId, boolean isRequestStatus) {
-        User user = userRepository.findByEmail(currentUser)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + currentUser));
+    public FriendshipStatusResponse getFriendshipStatus(Long friendId, boolean isRequestStatus) {
+        User user = userService.getCurrentAuthenticatedUser();
         Optional<Friendship> friendship;
 
         if(isRequestStatus){

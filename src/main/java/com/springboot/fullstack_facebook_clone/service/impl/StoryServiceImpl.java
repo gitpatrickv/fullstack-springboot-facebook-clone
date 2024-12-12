@@ -10,7 +10,6 @@ import com.springboot.fullstack_facebook_clone.repository.StoryRepository;
 import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.StoryService;
 import com.springboot.fullstack_facebook_clone.service.UserService;
-import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.StoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -32,24 +30,23 @@ public class StoryServiceImpl implements StoryService {
     private final StoryMapper storyMapper;
 
     @Override
-    public void createStory(Long userId, String text, MultipartFile file) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+    public void createStory(String text, MultipartFile file) {
+        User user = userService.getCurrentAuthenticatedUser();
 
         Story story = new Story();
         story.setText(text);
+        story.setUser(user);
         if(file != null) {
             story.setStoryImage(userService.processImage(file));
         }
         story.setTimestamp(LocalDateTime.now());
-        story.setUser(user);
+
         storyRepository.save(story);
     }
 
     @Override
-    public List<StoryListResponse> fetchAllStories(Long userId) {
-        User currentUser = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+    public List<StoryListResponse> fetchAllStories() {
+        User currentUser = userService.getCurrentAuthenticatedUser();
 
         Long currentUserId = currentUser.getUserId();
         List<Long> friendIds = new ArrayList<>();

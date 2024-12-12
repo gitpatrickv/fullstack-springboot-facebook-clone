@@ -16,12 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductController {
 
     private final ProductService productService;
-    @PostMapping(value = {"/save/{userId}"},  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = {"/save"},  consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public void saveProduct(@PathVariable("userId") Long userId,
-                            @RequestPart("product") @Valid ProductModel productModel,
+    public void saveProduct(@RequestPart("product") @Valid ProductModel productModel,
                             @RequestPart("file") MultipartFile[] files){
-        productService.saveProduct(userId, productModel, files);
+        productService.saveProduct(productModel, files);
     }
 
     @GetMapping

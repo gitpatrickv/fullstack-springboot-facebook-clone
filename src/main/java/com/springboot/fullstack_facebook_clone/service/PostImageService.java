@@ -1,6 +1,7 @@
 package com.springboot.fullstack_facebook_clone.service;
 
 import com.springboot.fullstack_facebook_clone.dto.response.PhotoListResponse;
+import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -11,4 +12,5 @@ public interface PostImageService {
     byte[] getImages(String filename) throws IOException;
     String processPostImages(Long postId, MultipartFile image);
     PhotoListResponse fetchAllPhotos(Long userId, int pageNo, int pageSize);
+    PostImage getPostImage(Long postImageId);
 }

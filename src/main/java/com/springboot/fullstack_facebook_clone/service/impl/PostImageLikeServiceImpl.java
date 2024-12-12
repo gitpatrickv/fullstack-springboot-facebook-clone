@@ -9,11 +9,10 @@ import com.springboot.fullstack_facebook_clone.entity.PostImage;
 import com.springboot.fullstack_facebook_clone.entity.PostImageLikes;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.repository.PostImageLikesRepository;
-import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
-import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.PostImageLikeService;
+import com.springboot.fullstack_facebook_clone.service.PostImageService;
+import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
-import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,22 +23,21 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PostImageLikeServiceImpl implements PostImageLikeService {
 
-    private final UserRepository userRepository;
-    private final PostImageRepository postImageRepository;
     private final PostImageLikesRepository postImageLikesRepository;
     private final Pagination pagination;
+    private final UserService userService;
+    private final PostImageService postImageService;
     @Transactional
     @Override
-    public void likePostImage(String email, Long postImageId) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
-        PostImage postImage = postImageRepository.findById(postImageId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_IMAGE_NOT_FOUND + postImageId));
+    public void likePostImage(Long postImageId) {
+        User user = userService.getCurrentAuthenticatedUser();
+        PostImage postImage = postImageService.getPostImage(postImageId);
         Optional<PostImageLikes> optionalPostImageLikes = postImageLikesRepository.findByPostImage_PostImageIdAndUser_UserId(postImageId, user.getUserId());
 
         if(optionalPostImageLikes.isPresent()){
@@ -54,8 +52,8 @@ public class PostImageLikeServiceImpl implements PostImageLikeService {
     }
 
     @Override
-    public LikeResponse getPostImageLike(String email, Long postImageId) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+    public LikeResponse getPostImageLike(Long postImageId) {
+        User user = userService.getCurrentAuthenticatedUser();
         Optional<PostImageLikes> postLike = postImageLikesRepository.findByPostImage_PostImageIdAndUser_UserId(postImageId, user.getUserId());
 
         LikeResponse likeResponse = new LikeResponse();
@@ -94,4 +92,6 @@ public class PostImageLikeServiceImpl implements PostImageLikeService {
         }
         return new UserListResponse(userDataModels,pageResponse);
     }
+
+
 }

@@ -49,8 +49,7 @@ public class UserController {
 
     @GetMapping
     public UserModel getCurrentUserInfo() {
-        String currentUser = userService.getAuthenticatedUser();
-        return userService.getCurrentUserInfo(currentUser);
+        return userService.getCurrentUserInfo();
     }
     @GetMapping("/profile/{userId}")
     public UserModel getUserProfileInfo(@PathVariable Long userId) {
@@ -61,8 +60,7 @@ public class UserController {
     public void uploadUserImage(@PathVariable(value = "imageType") ImageType imageType,
                                 @RequestPart(value = "file") MultipartFile file,
                                 @RequestPart(value="description", required = false) String description){
-        String currentUser = userService.getAuthenticatedUser();
-        userService.uploadUserImage(currentUser,file,imageType, description);
+        userService.uploadUserImage(file,imageType, description);
     }
 
     @GetMapping(path = "/image/{filename}", produces = {IMAGE_PNG_VALUE, IMAGE_JPEG_VALUE})

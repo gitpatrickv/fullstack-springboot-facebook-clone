@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface StoryService {
 
-    void createStory(Long userId, String text, MultipartFile file);
-    List<StoryListResponse> fetchAllStories(Long userId);
+    void createStory(String text, MultipartFile file);
+    List<StoryListResponse> fetchAllStories();
     void deleteStory(Long storyId);
 }

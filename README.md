@@ -1,7 +1,5 @@
 # Facebook Clone
 
----
-
 ### Demo Video
 [Watch the Demo Video](https://youtu.be/pnD32jIq0Us)
 ### Sample Screenshots
