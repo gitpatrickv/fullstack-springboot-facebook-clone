@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface PostImageCommentsService {
 
-    void writePostImageComment(String email, Long postImageId, String comment, MultipartFile file);
+    void writePostImageComment(Long postImageId, String comment, MultipartFile file);
     PostCommentListResponse fetchAllPostImageComments(Long postImageId, int pageNo, int pageSize);
     PostCommentCountResponse getPostImageCommentCount(Long postImageId);
 }

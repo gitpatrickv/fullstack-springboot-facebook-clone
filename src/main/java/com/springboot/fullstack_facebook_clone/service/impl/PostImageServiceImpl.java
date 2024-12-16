@@ -26,6 +26,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -98,5 +99,11 @@ public class PostImageServiceImpl implements PostImageService {
         }
 
         return new PhotoListResponse(postImageResponses,pageResponse);
+    }
+
+    @Override
+    public PostImage getPostImage(Long postImageId) {
+        return postImageRepository.findById(postImageId)
+                .orElseThrow(() -> new NoSuchElementException("Post image not found with id: " + postImageId));
     }
 }

@@ -14,15 +14,14 @@ import java.util.List;
 public class StoryController {
 
     private final StoryService storyService;
-    @PostMapping("/create/{userId}")
-    public void createStory(@PathVariable("userId") Long userId,
-                            @RequestPart(value = "text", required = false) String text,
+    @PostMapping("/create")
+    public void createStory(@RequestPart(value = "text", required = false) String text,
                             @RequestPart(value = "file", required = false) MultipartFile file){
-        storyService.createStory(userId,text,file);
+        storyService.createStory(text,file);
     }
-    @GetMapping("/{userId}")
-    public List<StoryListResponse> fetchAllStories(@PathVariable("userId")Long userId){
-        return storyService.fetchAllStories(userId);
+    @GetMapping()
+    public List<StoryListResponse> fetchAllStories(){
+        return storyService.fetchAllStories();
     }
     @DeleteMapping("/delete/{storyId}")
     public void deleteStory(@PathVariable("storyId") Long storyId) {

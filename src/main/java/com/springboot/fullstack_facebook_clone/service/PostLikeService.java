@@ -6,8 +6,8 @@ import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 
 public interface PostLikeService {
 
-    void likePost(String email, Long postId);
-    LikeResponse getPostLike(String email, Long postId);
+    void likePost(Long postId);
+    LikeResponse getPostLike(Long postId);
     PostLikeCountResponse getPostLikeCount(Long postId);
     UserListResponse getPostLikeUserList(Long postId, int pageNo, int pageSize);
 }

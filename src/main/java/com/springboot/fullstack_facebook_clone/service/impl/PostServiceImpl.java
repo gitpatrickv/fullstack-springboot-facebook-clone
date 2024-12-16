@@ -10,9 +10,9 @@ import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.entity.constants.FriendshipStatus;
 import com.springboot.fullstack_facebook_clone.repository.PostImageRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostRepository;
-import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.PostImageService;
 import com.springboot.fullstack_facebook_clone.service.PostService;
+import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.PostMapper;
@@ -37,17 +37,17 @@ import java.util.Optional;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private final PostImageService postImageService;
     private final PostMapper postMapper;
     private final SharedPostMapper sharedPostMapper;
     private final PostImageRepository postImageRepository;
     private final Pagination pagination;
+    private final UserService userService;
     @Transactional
     @Override
-    public void createPost(String email, Long userId, String content, MultipartFile[] files) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
-        User guestPoster = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+    public void createPost(Long userId, String content, MultipartFile[] files) {
+        User user = userService.getCurrentAuthenticatedUser();
+        User guestPoster = userService.getUserByUserId(userId);
         Long currentUserId = user.getUserId();
 
         Post post = new Post();
@@ -88,8 +88,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostListResponse fetchAllPosts(String email, int pageNo, int pageSize) {
-        User currentUser = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+    public PostListResponse fetchAllPosts(int pageNo, int pageSize) {
+        User currentUser = userService.getCurrentAuthenticatedUser();
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, StringUtil.TIMESTAMP));
 
         Long userId = currentUser.getUserId();
@@ -119,8 +119,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void sharePost(String email, Long postId, SharePostRequest request) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+    public void sharePost(Long postId, SharePostRequest request) {
+        User user = userService.getCurrentAuthenticatedUser();
         Optional<Post> sharedPost = postRepository.findById(postId);
 
         if(sharedPost.isPresent()) {
@@ -144,8 +144,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void sharePostImage(String email, Long postImageId,  Long postId,  SharePostRequest request) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+    public void sharePostImage(Long postImageId,  Long postId,  SharePostRequest request) {
+        User user = userService.getCurrentAuthenticatedUser();
         Optional<PostImage> postImage = postImageRepository.findById(postImageId);
         Optional<Post> sharedPost = postRepository.findById(postId);
 
@@ -192,18 +192,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePost(String email, Long postId) {
-        Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()){
-            postRepository.deleteById(postId);
-        } else {
-            throw new NoSuchElementException(StringUtil.USER_NOT_FOUND + email);
-        }
+    public void deletePost(Long postId) {
+        postRepository.deleteById(postId);
     }
 
     @Override
     public PostResponse findPostCreatorById(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_NOT_FOUND + postId));
+        Post post = this.getPost(postId);
 
         PostResponse postResponse = new PostResponse();
 
@@ -223,7 +218,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostModel getPostById(Long postId) {
 
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_NOT_FOUND + postId));
+        Post post = this.getPost(postId);
 
         PostModel postModel = this.getPost(post, postMapper);
         if(post.getSharedPost()!=null){
@@ -233,6 +228,13 @@ public class PostServiceImpl implements PostService {
 
         return postModel;
     }
+
+    @Override
+    public Post getPost(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("Post not found!"));
+    }
+
     private PostModel getPost(Post post, PostMapper postMapper) {
         PostModel postModel = postMapper.mapEntityToModel(post);
         postModel.setUserId(post.getUser().getUserId());

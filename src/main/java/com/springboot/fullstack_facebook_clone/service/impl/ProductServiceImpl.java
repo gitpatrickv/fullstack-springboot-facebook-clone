@@ -6,9 +6,9 @@ import com.springboot.fullstack_facebook_clone.dto.response.ProductResponse;
 import com.springboot.fullstack_facebook_clone.entity.Product;
 import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.repository.ProductRepository;
-import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.ProductImageService;
 import com.springboot.fullstack_facebook_clone.service.ProductService;
+import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.ProductMapper;
@@ -23,22 +23,20 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final ProductImageService productImageService;
     private final Pagination pagination;
+    private final UserService userService;
     @Override
-    public void saveProduct(Long userId, ProductModel productModel, MultipartFile[] files) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + userId));
+    public void saveProduct(ProductModel productModel, MultipartFile[] files) {
+        User user = userService.getCurrentAuthenticatedUser();
 
         Product product = productMapper.mapModelToEntity(productModel);
         product.setTimestamp(LocalDateTime.now());

@@ -4,7 +4,6 @@ import com.springboot.fullstack_facebook_clone.dto.response.LikeResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.PostLikeCountResponse;
 import com.springboot.fullstack_facebook_clone.dto.response.UserListResponse;
 import com.springboot.fullstack_facebook_clone.service.PostImageLikeService;
-import com.springboot.fullstack_facebook_clone.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,17 +13,14 @@ import org.springframework.web.bind.annotation.*;
 public class PostImageLikesController {
 
     private final PostImageLikeService postImageLikeService;
-    private final UserService userService;
     @PutMapping("/{postImageId}/image/like")
     public void likePostImage(@PathVariable("postImageId") Long postImageId) {
-        String currentUser = userService.getAuthenticatedUser();
-        postImageLikeService.likePostImage(currentUser, postImageId);
+        postImageLikeService.likePostImage(postImageId);
     }
 
     @GetMapping("/{postImageId}/image/like")
-    public LikeResponse getPostLike(@PathVariable("postImageId") Long postImageId){
-        String currentUser = userService.getAuthenticatedUser();
-        return postImageLikeService.getPostImageLike(currentUser, postImageId);
+    public LikeResponse getPostImageLike(@PathVariable("postImageId") Long postImageId){
+        return postImageLikeService.getPostImageLike(postImageId);
     }
     @GetMapping("/{postImageId}/image/like/count")
     public PostLikeCountResponse getPostImageLikeCount(@PathVariable("postImageId") Long postImageId) {

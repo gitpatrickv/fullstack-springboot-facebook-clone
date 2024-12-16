@@ -19,10 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class ChatController {
 
     private final ChatService chatService;
-    @PostMapping("/{userId}/{friendId}")
-    public ChatIdResponse chatUser(@PathVariable("userId") Long userId,
-                                     @PathVariable("friendId") Long friendId){
-       return chatService.chatUser(userId,friendId);
+    @PostMapping("/{friendId}")
+    public ChatIdResponse chatUser(@PathVariable("friendId") Long friendId){
+       return chatService.chatUser(friendId);
     }
 
     @GetMapping("/{userId}")
@@ -36,9 +35,9 @@ public class ChatController {
                                   @PathVariable("userId") Long userId) {
         return chatService.findChatById(chatId,userId);
     }
-    @PostMapping("/group/create/{userId}")
-    public ChatIdResponse createGroupChat(@PathVariable("userId") Long userId, @RequestBody @Valid GroupChatRequest request) {
-        return chatService.createGroupChat(userId,request);
+    @PostMapping("/group/create")
+    public ChatIdResponse createGroupChat(@RequestBody @Valid GroupChatRequest request) {
+        return chatService.createGroupChat(request);
     }
     @PostMapping("/group/upload/image/{chatId}")
     public void uploadGroupChatPhoto(@PathVariable("chatId") Long chatId,

@@ -16,13 +16,14 @@ import java.util.List;
 public interface UserService {
     LoginResponse login(LoginRequest loginRequest);
     LoginResponse register(UserModel userModel);
-    String getAuthenticatedUser();
-    UserModel getCurrentUserInfo(String email);
+    UserModel getCurrentUserInfo();
     UserModel getUserProfileInfo(Long userId);
-    void uploadUserImage(String email, MultipartFile file, ImageType imageType, String description);
+    void uploadUserImage(MultipartFile file, ImageType imageType, String description);
     String processImage(MultipartFile image);
     UserListResponse searchUser(String search,  int pageNo, int pageSize);
     PageResponse getUserPagination(Page<User> users);
     List<UserDataModel> getUserDataModels(Page<User> users);
+    User getUserByUserId(Long userId);
+    User getCurrentAuthenticatedUser();
 
 }

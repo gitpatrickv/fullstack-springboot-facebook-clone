@@ -13,10 +13,10 @@ import com.springboot.fullstack_facebook_clone.entity.User;
 import com.springboot.fullstack_facebook_clone.entity.constants.NotificationType;
 import com.springboot.fullstack_facebook_clone.repository.NotificationRepository;
 import com.springboot.fullstack_facebook_clone.repository.PostLikeRepository;
-import com.springboot.fullstack_facebook_clone.repository.PostRepository;
-import com.springboot.fullstack_facebook_clone.repository.UserRepository;
 import com.springboot.fullstack_facebook_clone.service.NotificationService;
 import com.springboot.fullstack_facebook_clone.service.PostLikeService;
+import com.springboot.fullstack_facebook_clone.service.PostService;
+import com.springboot.fullstack_facebook_clone.service.UserService;
 import com.springboot.fullstack_facebook_clone.utils.Pagination;
 import com.springboot.fullstack_facebook_clone.utils.StringUtil;
 import com.springboot.fullstack_facebook_clone.utils.mapper.NotificationMapper;
@@ -31,7 +31,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -40,18 +39,18 @@ import java.util.Optional;
 public class PostLikeServiceImpl implements PostLikeService {
 
     private final PostLikeRepository postLikeRepository;
-    private final UserRepository userRepository;
-    private final PostRepository postRepository;
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
     private final NotificationMapper notificationMapper;
     private final Pagination pagination;
+    private final UserService userService;
+    private final PostService postService;
 
     @Transactional
     @Override
-    public void likePost(String email, Long postId) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NoSuchElementException(StringUtil.POST_NOT_FOUND + postId));
+    public void likePost(Long postId) {
+        User user = userService.getCurrentAuthenticatedUser();
+        Post post = postService.getPost(postId);
         Optional<PostLike> optionalPostLike = postLikeRepository.findByPost_PostIdAndUser_UserId(postId, user.getUserId());
 
         if (optionalPostLike.isPresent()) {
@@ -86,8 +85,8 @@ public class PostLikeServiceImpl implements PostLikeService {
     }
 
     @Override
-    public LikeResponse getPostLike(String email, Long postId) {
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException(StringUtil.USER_NOT_FOUND + email));
+    public LikeResponse getPostLike(Long postId) {
+        User user = userService.getCurrentAuthenticatedUser();
         Optional<PostLike> postLike = postLikeRepository.findByPost_PostIdAndUser_UserId(postId, user.getUserId());
 
         LikeResponse likeResponse = new LikeResponse();

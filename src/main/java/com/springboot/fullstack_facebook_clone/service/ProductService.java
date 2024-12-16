@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
 
-    void saveProduct(Long userId, ProductModel productModel,  MultipartFile[] files);
+    void saveProduct(ProductModel productModel,  MultipartFile[] files);
     ProductResponse fetchAllProducts(int pageNo, int pageSize);
     ProductResponse fetchAllProductsByCategory(String category, int pageNo, int pageSize);
     ProductResponse fetchAllUserListedProducts(Long userId, int pageNo, int pageSize);
