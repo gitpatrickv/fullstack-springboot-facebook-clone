@@ -11,6 +11,13 @@ services:
       - facebook-clone-db:/var/lib/mysql
     networks:
       - facebook-clone-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "facebook-clone-db", "--password=password" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 5s
+
   facebook-clone-api:
     container_name: facebook-clone
     image: gitpatrickv/facebook-clone:latest
@@ -22,23 +29,11 @@ services:
     networks:
       - facebook-clone-network
     depends_on:
-      - facebook-clone-db
+      facebook-clone-db:
+        condition: service_healthy
 #    volumes:
 #      - ./images:/app/images
 
-  flyway:
-    image: flyway/flyway
-    container_name: facebook-clone-flyway
-    environment:
-      - FLYWAY_URL=jdbc:mysql://facebook-clone-db:3306/facebook-db
-      - FLYWAY_USER=root
-      - FLYWAY_PASSWORD=password
-    volumes:
-      - ./db/migrations:/flyway/sql
-    depends_on:
-      - facebook-clone-db
-    networks:
-      - facebook-clone-network
 
 volumes:
   facebook-clone-db:
@@ -46,6 +41,3 @@ volumes:
 networks:
   facebook-clone-network:
     driver: bridge
-
-
-
