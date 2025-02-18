@@ -1,7 +1,7 @@
 # Facebook Clone
 
 ### Demo Video
-[Watch the Demo Video](https://youtu.be/pnD32jIq0Us)
+https://www.youtube.com/watch?v=i-ZD2nUG_54&t=1s
 ### Sample Screenshots
 - **Home Page**
   ![HomePage](https://github.com/user-attachments/assets/fd32ea52-f35b-48c2-b42c-790ded42ac28)
@@ -23,7 +23,8 @@ More features are being added.
 
 ## Project Overview
 
-A fully-featured Facebook clone that replicates the core functions of Facebook's desktop version with a responsive UI for all devices. Users can connect, share, and interact seamlessly, with real-time notifications and instant messaging for a dynamic social media experience.
+A fully-featured Facebook clone that replicates the core functions of Facebook's desktop version with a responsive UI for all devices. 
+Users can connect, share, and interact seamlessly, with real-time notifications and instant messaging for a dynamic social media experience.
 
 ## Tech Stack
 
